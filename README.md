@@ -1,6 +1,26 @@
 # Deep Image Matting
 This repository is to reproduce Deep Image Matting.
 
+## Run matting on a single input and a trimap
+
+1. Create a virtualenv and install the dependencies
+```bash
+
+virtualenv venv
+source venv/bin/activate
+python -r requirements.txt
+```
+
+2. Download the model (see below) 
+
+3. Run the actual matting script 
+```bash
+
+python matte.py path/to/image.png path/to/trimap.png
+```
+
+4. Check for the output in the folder named `matting`
+
 ## Dependencies
 - [NumPy](http://docs.scipy.org/doc/numpy-1.10.1/user/install.html)
 - [Tensorflow 1.9.0](https://www.tensorflow.org/)
