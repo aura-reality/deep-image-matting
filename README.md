@@ -10,7 +10,7 @@ virtualenv venv
 source venv/bin/activate
 python -r requirements.txt
 ```
-2. Download the model (see below)
+2. Download the [model](https://github.com/foamliu/Deep-Image-Matting/releases/download/v1.0/final.42-0.0398.hdf5)
 3. Make the output directory: `mkdir matting`
 4. Run the actual matting script on sample data
 ```bash
