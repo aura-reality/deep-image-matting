@@ -72,8 +72,8 @@ def matte(image_path, trimap_path, model):
 
     bgr_img = safe_crop(bgr_img, x, y, crop_size)
     trimap = safe_crop(trimap, x, y, crop_size)
-    cv.imwrite('images/image.png', np.array(bgr_img).astype(np.uint8))
-    cv.imwrite('images/trimap.png', np.array(trimap).astype(np.uint8))
+    cv.imwrite('matting/image.png', np.array(bgr_img).astype(np.uint8))
+    cv.imwrite('matting/trimap.png', np.array(trimap).astype(np.uint8))
 
     x_test = np.empty((1, img_rows, img_cols, 4), dtype=np.float32)
     x_test[0, :, :, 0:3] = bgr_img / 255.
@@ -89,7 +89,7 @@ def matte(image_path, trimap_path, model):
     y_pred = y_pred.astype(np.uint8)
 
     out = y_pred.copy()
-    cv.imwrite('images/out.png', out)
+    cv.imwrite('matting/out.png', out)
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:
@@ -98,14 +98,6 @@ if __name__ == '__main__':
 
     image_path = sys.argv[1]   
     trimap_path = sys.argv[2]
-
-    image_name = 'donkey.png'
-
-    base_path = '/Users/sttawm/dev/thing-super-models/Deep-Image-Matting/data'
-    trimap_base_path = os.path.join(base_path, 'Trimap1')
-
-    image_path = os.path.join(base_path, image_name)
-    trimap_path = os.path.join(trimap_base_path, image_name)
 
     model = load_model()
     matte(image_path, trimap_path, model)
