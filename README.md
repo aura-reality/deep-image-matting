@@ -1,7 +1,7 @@
 # Deep Image Matting
 This repository is to reproduce Deep Image Matting.
 
-## Run matting on a single input and a trimap
+## Yo Erez - Run matting on a single input and a trimap
 
 1. Create a virtualenv and install the dependencies
 ```bash
