@@ -30,7 +30,6 @@ def composite4(fg, bg, a, w, h):
 
 # Randomly crop (image, trimap) pairs centered on pixels in the unknown regions.
 def random_choice(trimap, crop_size=(320, 320)):
-    print(trimap)
     crop_height, crop_width = crop_size
     y_indices, x_indices = np.where(trimap == unknown_code)
     num_unknowns = len(y_indices)
@@ -92,7 +91,7 @@ def matte(image_path, trimap_path, model):
     cv.imwrite('matting/out.png', out)
 
 if __name__ == '__main__':
-    if len(sys.argv) == 3:
+    if len(sys.argv) != 3:
         print("Usage: matte.py image.png trimap.png")
         sys.exit(1)
 
