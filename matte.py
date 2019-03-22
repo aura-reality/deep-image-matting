@@ -8,7 +8,7 @@ import numpy as np
 
 import sys
 
-from config import unknown_code
+from config import img_rows, img_cols, unknown_code
 from model import build_encoder_decoder, build_refinement
 from utils import get_final_output, safe_crop, draw_str
 
@@ -29,7 +29,7 @@ def composite4(fg, bg, a, w, h):
     return im, bg
 
 # Randomly crop (image, trimap) pairs centered on pixels in the unknown regions.
-def random_choice(trimap, crop_size=(320, 320)):
+def random_choice(trimap, crop_size):
     crop_height, crop_width = crop_size
     y_indices, x_indices = np.where(trimap == unknown_code)
     num_unknowns = len(y_indices)
@@ -51,8 +51,6 @@ def load_model():
     return final
 
 def matte(image_path, trimap_path, model): 
-    img_rows, img_cols = 320, 320
-    channel = 4
 
     # Read the background image
     #
