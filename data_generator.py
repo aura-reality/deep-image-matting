@@ -11,18 +11,14 @@ from config import batch_size
 from config import fg_path, bg_path, a_path
 from config import img_cols, img_rows
 from config import unknown_code
+from config import training_fg_names_path, training_bg_names_path
 from utils import safe_crop
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
-with open('Combined_Dataset/Training_set/training_fg_names.txt') as f:
+with open(training_fg_names_path) as f:
     fg_files = f.read().splitlines()
-with open('Combined_Dataset/Test_set/test_fg_names.txt') as f:
-    fg_test_files = f.read().splitlines()
-with open('Combined_Dataset/Training_set/training_bg_names.txt') as f:
+with open(training_bg_names_path) as f:
     bg_files = f.read().splitlines()
-with open('Combined_Dataset/Test_set/test_bg_names.txt') as f:
-    bg_test_files = f.read().splitlines()
-
 
 def get_alpha(name):
     fg_i = int(name.split("_")[0])
@@ -162,32 +158,6 @@ def train_gen():
 
 def valid_gen():
     return DataGenSequence('valid')
-
-
-def shuffle_data():
-    num_fgs = 431
-    num_bgs = 43100
-    num_bgs_per_fg = 100
-    num_valid_samples = 8620
-    names = []
-    bcount = 0
-    for fcount in range(num_fgs):
-        for i in range(num_bgs_per_fg):
-            names.append(str(fcount) + '_' + str(bcount) + '.png')
-            bcount += 1
-
-    from config import num_valid_samples
-    valid_names = random.sample(names, num_valid_samples)
-    train_names = [n for n in names if n not in valid_names]
-    shuffle(valid_names)
-    shuffle(train_names)
-
-    with open('valid_names.txt', 'w') as file:
-        file.write('\n'.join(valid_names))
-
-    with open('train_names.txt', 'w') as file:
-        file.write('\n'.join(train_names))
-
 
 if __name__ == '__main__':
     filename = 'merged/357_35748.png'

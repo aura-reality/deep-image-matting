@@ -35,3 +35,5 @@ Combined_Dataset/Training_set/Composition_code.py
 Combined_Dataset/Training_set/Other/
 Combined_Dataset/Training_set/training_bg_names.txt
 Combined_Dataset/Training_set/training_fg_names.txt
+train_names.txt
+valid_names.txt
