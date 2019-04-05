@@ -1,23 +1,24 @@
 # Deep Image Matting
 This repository is to reproduce Deep Image Matting.
 
-## Yo Erez - Run matting on a single input and a trimap
+## Setup the environment
 
 1. Create a virtualenv and install the dependencies
 ```bash
-
-virtualenv venv
+virtualenv -p python3 venv
 source venv/bin/activate
 python -r requirements.txt
 ```
-2. Download the [model](https://github.com/foamliu/Deep-Image-Matting/releases/download/v1.0/final.42-0.0398.hdf5) and put it in the `models` directory
-3. Make the output directory: `mkdir matting`
-4. Run the actual matting script on sample data
+
+## matte something
+1. Download the [model](https://github.com/foamliu/Deep-Image-Matting/releases/download/v1.0/final.42-0.0398.hdf5) and put it in the `models` directory
+2. Make the output directory: `mkdir matting`
+3. Run the actual matting script on sample data
 ```bash
 
 python matte.py data/donkey.png data/Trimap1/donkey.png
 ```
-5. Check for the output in the folder named `matting`
+4. Check for the output in the folder named `matting`
 
 ## Dependencies
 - [NumPy](http://docs.scipy.org/doc/numpy-1.10.1/user/install.html)
