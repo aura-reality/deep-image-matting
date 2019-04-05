@@ -1,13 +1,20 @@
 # Deep Image Matting
 This repository is to reproduce Deep Image Matting.
 
+
+
 ## Setup the environment
 
-1. Create a virtualenv and install the dependencies
+Create a virtualenv and install the dependencies
 ```bash
 virtualenv -p python3 venv
 source venv/bin/activate
 python -r requirements.txt
+```
+
+On mac, set the following environment variable:
+```bash
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
 
 ## matte something
