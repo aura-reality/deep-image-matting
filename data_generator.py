@@ -11,13 +11,13 @@ from config import batch_size
 from config import fg_path, bg_path, a_path
 from config import img_cols, img_rows
 from config import unknown_code
-from config import training_fg_names_path, training_bg_names_path
+from config import fg_names_path, bg_names_path
 from utils import safe_crop
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
-with open(training_fg_names_path) as f:
+with open(fg_names_path) as f:
     fg_files = f.read().splitlines()
-with open(training_bg_names_path) as f:
+with open(bg_names_path) as f:
     bg_files = f.read().splitlines()
 
 def get_alpha(name):
@@ -64,7 +64,6 @@ def process(im_name, bg_name):
     ratio = wratio if wratio > hratio else hratio
     if ratio > 1:
         bg = cv.resize(src=bg, dsize=(math.ceil(bw * ratio), math.ceil(bh * ratio)), interpolation=cv.INTER_CUBIC)
-
     return composite4(im, bg, a, w, h)
 
 
