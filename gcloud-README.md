@@ -1,6 +1,7 @@
 ## Copy data to google cloud
 * Make sure all your data is in the `/data` folder (specifically the `fg_path`, `bg_path`, and `a_path` as given in [config.py](config.py))
 * Then, you can try to run `./copy-to-gcloud-bucket.sh`
+  * You'll first have to install the command line tools, see the section titled **Setup Your Environment** [here](https://cloud.google.com/ml-engine/docs/tensorflow/getting-started-training-prediction)
   * It intermittently works for me; I get lots of retries (maybe due to bad internet).
 * If the script doesn't work, you can always [upload the files through the browser]( https://cloud.google.com/storage/docs/uploading-objects).
   * Upload to `gs://secret-compass-237117-mlengine/data` (i.e. mirror it with your local directory)
