@@ -3,7 +3,7 @@
 * Then, you can try to run `./copy-to-gcloud-bucket.sh`
   * You'll first have to install the command line tools, see the section titled **Setup Your Environment** [here](https://cloud.google.com/ml-engine/docs/tensorflow/getting-started-training-prediction)
   * It intermittently works for me; I get lots of retries (maybe due to bad internet).
-* If the script doesn't work, you can always [upload the files through the browser]( https://cloud.google.com/storage/docs/uploading-objects).
+* **@Erez: recommended / easier option:** If the script doesn't work, you can always [upload the files through the browser]( https://cloud.google.com/storage/docs/uploading-objects).
   * Upload to `gs://secret-compass-237117-mlengine/data` (i.e. mirror it with your local directory)
 
 ## Download credentials
