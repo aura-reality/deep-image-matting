@@ -6,6 +6,6 @@
   * Upload to `gs://secret-compass-237117-mlengine/data` (i.e. mirror it with your local directory)
 
 ## Download credentials
-To interact with google cloud with python (i.e. to train), you may need to download credentials.
-See the section titled 'Setting up authentication'
-https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python
+* To interact with google cloud with python (i.e. to train), you may need to download credentials.
+  * See the section titled 'Setting up authentication' [here](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python)
+
