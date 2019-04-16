@@ -1,5 +1,6 @@
 ## Copy data to google cloud
 * Make sure all your data is in the `/data` folder (specifically the `fg_path`, `bg_path`, and `a_path` as given in [config.py](config.py))
+  * Run `./prepare-to-train.py`
 * Then, you can try to run `./copy-to-gcloud-bucket.sh`
   * You'll first have to install the command line tools, see the section titled **Setup Your Environment** [here](https://cloud.google.com/ml-engine/docs/tensorflow/getting-started-training-prediction)
   * It intermittently works for me; I get lots of retries (maybe due to bad internet).
