@@ -6,6 +6,7 @@
   * It intermittently works for me; I get lots of retries (maybe due to bad internet).
 * **@Erez: recommended / easier option:** If the script doesn't work, you can always [upload the files through the browser]( https://cloud.google.com/storage/docs/uploading-objects).
   * Upload to `gs://secret-compass-237117-mlengine/data` (i.e. mirror it with your local directory)
+* Send me your `config.py`
 
 ## Download credentials
 * To interact with google cloud with python (i.e. to train), you may need to download credentials.
