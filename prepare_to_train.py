@@ -8,6 +8,7 @@ import os
 import random
 from config import fg_path, a_path, bg_path
 from config import fg_names_path, bg_names_path
+from config import train_names_path, valid_names_path
 from config import num_bgs_per_fg, training_fraction
 from math import floor, ceil
 from random import shuffle
@@ -47,13 +48,13 @@ def shuffle_data(num_fgs):
     shuffle(valid_names)
     shuffle(train_names)
 
-    with open('valid_names.txt', 'w') as file:
+    with open(valid_names_path, 'w') as file:
         file.write('\n'.join(valid_names))
-        print("Generated 'valid_names.txt'")
+        print("Generated %s" % valid_names_path)
 
-    with open('train_names.txt', 'w') as file:
+    with open(train_names_path, 'w') as file:
         file.write('\n'.join(train_names))
-        print("Generated 'train_names.txt'")
+        print("Generated '%s'" % train_names_path)
 
 if __name__ == '__main__':
 
