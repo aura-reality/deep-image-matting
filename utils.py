@@ -88,8 +88,7 @@ def get_final_output(out, trimap):
     mask = np.equal(trimap, unknown_code).astype(np.float32)
     return (1 - mask) * trimap + mask * out
 
-
-def safe_crop(mat, x, y, crop_size=(img_rows, img_cols)):
+def crop(mat, x, y, crop_size):
     crop_height, crop_width = crop_size
     if len(mat.shape) == 2:
         ret = np.zeros((crop_height, crop_width), np.float32)
@@ -98,6 +97,10 @@ def safe_crop(mat, x, y, crop_size=(img_rows, img_cols)):
     crop = mat[y:y + crop_height, x:x + crop_width]
     h, w = crop.shape[:2]
     ret[0:h, 0:w] = crop
+    return ret
+
+def safe_crop(mat, x, y, crop_size=(img_rows, img_cols)):
+    ret = crop(mat, x, y, crop_size)
     if crop_size != (img_rows, img_cols):
         ret = cv.resize(ret, dsize=(img_rows, img_cols), interpolation=cv.INTER_NEAREST)
     return ret

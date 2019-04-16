@@ -7,6 +7,7 @@ from vgg16 import vgg16_model
 
 
 def migrate_model(new_model):
+    print("Initializing with VGG-16 model weights")
     old_model = vgg16_model(224, 224, 3)
     # print(old_model.summary())
     old_layers = [l for l in old_model.layers]

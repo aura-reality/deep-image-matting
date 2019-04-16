@@ -11,6 +11,8 @@ from migrate import migrate_model
 from segnet import build_encoder_decoder, build_refinement
 from utils import overall_loss, get_available_cpus, get_available_gpus
 
+import math
+
 if __name__ == '__main__':
     checkpoint_models_path = 'models/'
     # Parse arguments
@@ -67,11 +69,14 @@ if __name__ == '__main__':
     # Final callbacks
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
+    steps_per_epoch = math.ceil(num_train_samples / batch_size)
+    validation_steps= math.ceil(num_valid_samples / batch_size)
+
     # Start Fine-tuning
     final.fit_generator(train_gen(),
-                        steps_per_epoch=num_train_samples // batch_size,
+                        steps_per_epoch=steps_per_epoch,
                         validation_data=valid_gen(),
-                        validation_steps=num_valid_samples // batch_size,
+                        validation_steps=validation_steps,
                         epochs=epochs,
                         verbose=1,
                         callbacks=callbacks,
