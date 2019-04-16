@@ -9,16 +9,25 @@ from keras.utils import Sequence
 
 from config import batch_size
 from config import fg_path, bg_path, a_path
+from config import train_names_path, valid_names_path
 from config import img_cols, img_rows
 from config import unknown_code
 from config import fg_names_path, bg_names_path
 from utils import safe_crop
+import tensorflow as tf
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
+fg_files_iter = tf.data.TextLineDataset(fg_names_path).make_one_shot_iterator()
+next(fg_files_iter)
+fg_files = list(tf.data.TextLineDataset(fg_names_path).make_one_shot_iterator())
+bg_files = list(tf.data.TextLineDataset(bg_names_path).make_one_shot_iterator())
+
+"""
 with open(fg_names_path) as f:
     fg_files = f.read().splitlines()
 with open(bg_names_path) as f:
     bg_files = f.read().splitlines()
+"""
 
 def get_alpha(name):
     fg_i = int(name.split("_")[0])
@@ -95,7 +104,12 @@ class DataGenSequence(Sequence):
     def __init__(self, usage):
         self.usage = usage
 
-        filename = '{}_names.txt'.format(usage)
+        if usage == 'train':
+            filename = train_names_path
+        elif usage == 'valid':
+            filename = valid_names_path
+        else raise ValueError(usage)
+
         with open(filename, 'r') as f:
             self.names = f.read().splitlines()
 
