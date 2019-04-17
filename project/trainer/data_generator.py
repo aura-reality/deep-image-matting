@@ -6,34 +6,27 @@ from random import shuffle
 import cv2 as cv
 import numpy as np
 from keras.utils import Sequence
-
-from config import batch_size
-from config import fg_path, bg_path, a_path
-from config import train_names_path, valid_names_path
-from config import img_cols, img_rows
-from config import unknown_code
-from config import fg_names_path, bg_names_path
-from utils import safe_crop
 import tensorflow as tf
 
-kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
-fg_files_iter = tf.data.TextLineDataset(fg_names_path).make_one_shot_iterator()
-next(fg_files_iter)
-fg_files = list(tf.data.TextLineDataset(fg_names_path).make_one_shot_iterator())
-bg_files = list(tf.data.TextLineDataset(bg_names_path).make_one_shot_iterator())
+from trainer.config import batch_size
+from trainer.config import fg_path, bg_path, a_path
+from trainer.config import train_names_path, valid_names_path
+from trainer.config import img_cols, img_rows
+from trainer.config import unknown_code
+from trainer.config import fg_names_path, bg_names_path
+from trainer.utils import safe_crop
+import trainer.my_io as mio
 
-"""
-with open(fg_names_path) as f:
-    fg_files = f.read().splitlines()
-with open(bg_names_path) as f:
-    bg_files = f.read().splitlines()
-"""
+kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
+
+fg_files = mio.read_lines(fg_names_path)
+bg_files = mio.read_lines(bg_names_path)
 
 def get_alpha(name):
     fg_i = int(name.split("_")[0])
     name = fg_files[fg_i]
     filename = os.path.join('data/mask', name)
-    alpha = cv.imread(filename, 0)
+    alpha = mio.imread(filename, 0)
     return alpha
 
 
@@ -41,7 +34,7 @@ def get_alpha_test(name):
     fg_i = int(name.split("_")[0])
     name = fg_test_files[fg_i]
     filename = os.path.join('data/mask_test', name)
-    alpha = cv.imread(filename, 0)
+    alpha = mio.imread(filename, 0)
     return alpha
 
 
@@ -63,10 +56,10 @@ def composite4(fg, bg, a, w, h):
 
 
 def process(im_name, bg_name):
-    im = cv.imread(fg_path + im_name)
-    a = cv.imread(a_path + im_name, 0)
+    im = mio.imread(fg_path + im_name)
+    a = mio.imread(a_path + im_name, 0)
     h, w = im.shape[:2]
-    bg = cv.imread(bg_path + bg_name)
+    bg = mio.imread(bg_path + bg_name)
     bh, bw = bg.shape[:2]
     wratio = w / bw
     hratio = h / bh
@@ -108,11 +101,10 @@ class DataGenSequence(Sequence):
             filename = train_names_path
         elif usage == 'valid':
             filename = valid_names_path
-        else raise ValueError(usage)
+        else:
+            raise ValueError(usage)
 
-        with open(filename, 'r') as f:
-            self.names = f.read().splitlines()
-
+        self.names = mio.read_lines(filename)
         np.random.shuffle(self.names)
 
     def __len__(self):
@@ -173,7 +165,7 @@ def valid_gen():
     return DataGenSequence('valid')
 
 if __name__ == '__main__':
-    filename = 'merged/357_35748.png'
-    bgr_img = cv.imread(filename)
-    bg_h, bg_w = bgr_img.shape[:2]
-    print(bg_w, bg_h)
+    i = 0
+    for f in train_gen():
+        print("Cycling through the generator: %s" % i)
+        i = i + 1
