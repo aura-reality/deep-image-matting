@@ -23,3 +23,5 @@ From here, you can see stats and stop the job.
 
 In the main menu (three lines):
 * Artificial Intelligence => AI Platform => Jobs
+
+Or just follow this: https://console.cloud.google.com/mlengine/jobs?project=secret-compass-237117
