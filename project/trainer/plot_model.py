@@ -1,5 +1,5 @@
 # dependency: pip install pydot & brew install graphviz
-from model import build_encoder_decoder
+from trainer.model import build_encoder_decoder
 from keras.utils import plot_model
 
 if __name__ == '__main__':

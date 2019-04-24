@@ -4,11 +4,11 @@ import unittest
 import cv2 as cv
 import numpy as np
 import os
-from config import unknown_code
-from data_generator import generate_trimap
-from data_generator import get_alpha
-from data_generator import random_choice
-from utils import safe_crop
+from trainer.config import unknown_code
+from trainer.data_generator import generate_trimap
+from trainer.data_generator import get_alpha
+from trainer.data_generator import random_choice
+from trainer.utils import safe_crop
 
 
 class TestStringMethods(unittest.TestCase):

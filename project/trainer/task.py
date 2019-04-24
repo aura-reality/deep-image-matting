@@ -5,21 +5,22 @@ import tensorflow as tf
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
-from data_generator import train_gen, valid_gen
-from migrate import migrate_model
-from segnet import build_encoder_decoder, build_refinement
-from utils import overall_loss, get_available_cpus, get_available_gpus
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples
+from trainer.data_generator import train_gen, valid_gen
+from trainer.migrate import migrate_model
+from trainer.segnet import build_encoder_decoder, build_refinement
+from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
 
 import math
 
 if __name__ == '__main__':
-    checkpoint_models_path = 'models/'
     # Parse arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
+    ap.add_argument("--job-dir", dest="job_dir", default="models/", help="checkpoint dir")
     args = vars(ap.parse_args())
     pretrained_path = args["pretrained"]
+    checkpoint_models_path = args["job_dir"]
 
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)

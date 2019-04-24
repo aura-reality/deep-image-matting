@@ -5,10 +5,10 @@ import keras.backend as K
 import numpy as np
 from tensorflow.python.client import device_lib
 
-from config import epsilon, epsilon_sqr
-from config import img_cols
-from config import img_rows
-from config import unknown_code
+from trainer.config import epsilon, epsilon_sqr
+from trainer.config import img_cols
+from trainer.config import img_rows
+from trainer.config import unknown_code
 
 
 # overall loss: weighted summation of the two individual losses.

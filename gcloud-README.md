@@ -12,3 +12,14 @@
 * To interact with google cloud with python (i.e. to train), you may need to download credentials.
   * See the section titled 'Setting up authentication' [here](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python)
 
+## Submit a job to google cloud
+```
+cd trainer
+./gcloud/submit-training.sh
+```
+
+## View the job through the console
+From here, you can see stats and stop the job.
+
+In the main menu (three lines):
+* Artificial Intelligence => AI Platform => Jobs

@@ -5,6 +5,8 @@ from keras.layers import Conv2D, ZeroPadding2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 
+from trainer.config import vgg16_weights_local_path, vgg16_weights_remote_path
+import trainer.my_io as my_io
 
 def vgg16_model(img_rows, img_cols, channel=3):
     model = Sequential()
@@ -54,8 +56,8 @@ def vgg16_model(img_rows, img_cols, channel=3):
     model.add(Dense(1000, activation='softmax', name='softmax'))
 
     # Loads ImageNet pre-trained data
-    weights_path = 'models/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
-    model.load_weights(weights_path)
+    my_io.cache(vgg16_weights_remote_path, vgg16_weights_local_path)
+    model.load_weights(vgg16_weights_local_path)
 
     return model
 

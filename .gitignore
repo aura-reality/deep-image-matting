@@ -37,3 +37,10 @@ Combined_Dataset/Training_set/training_bg_names.txt
 Combined_Dataset/Training_set/training_fg_names.txt
 train_names.txt
 valid_names.txt
+*.pyc
+venv
+.DS_Store
+.Python
+data
+data-archive
+*.swp
