@@ -14,7 +14,7 @@
 
 ## Submit a job to google cloud
 ```
-cd trainer
+cd project
 ./gcloud/submit-training.sh
 ```
 
