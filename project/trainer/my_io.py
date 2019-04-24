@@ -5,7 +5,7 @@ import numpy as np
 from tensorflow.python.lib.io import file_io
 import os
 
-def __is_gcloud(url_str):
+def is_gcloud(url_str):
     return urlparse(url_str).scheme == 'gs'
 
 def __get_blob(url_str):
@@ -22,7 +22,7 @@ def __download_as_string(url_str):
     return __get_blob(url_str).download_as_string()
 
 def imread(url_str, flags=1):
-    if __is_gcloud(url_str):
+    if is_gcloud(url_str):
         im_bytes = bytearray(__download_as_string(url_str))
         im_np = np.asarray(im_bytes, dtype=np.uint8)
         return cv.imdecode(im_np, flags)
@@ -31,7 +31,7 @@ def imread(url_str, flags=1):
         return cv.imread(url_str, flags)
 
 def read_lines(url_str):
-    if __is_gcloud(url_str):
+    if is_gcloud(url_str):
         data = __download_as_string(url_str)
         return data.decode('utf-8').splitlines()
     else:
@@ -47,3 +47,22 @@ def cache(from_url, cache_to):
         temp_the_file.write(the_file.read())
         temp_the_file.close()
         the_file.close()
+
+def save_to_gcloud(from_path, to_url):
+    if not is_gcloud(to_url):
+        raise ValueError("Expected gcloud url, got %s" % to_url)
+
+    print('Uploading: %s' % to_url)
+
+    with file_io.FileIO(from_path, mode='rb') as in_file:
+        with file_io.FileIO(to_url, mode='wb+') as out_file:
+            for chunk in iter(lambda: in_file.read(4096 * 32), b''):
+                out_file.write(chunk)
+
+if __name__ == '__main__':
+    with open("test.txt", mode='wb+') as of:
+        for i in range(10000):
+            of.write(b'Test passed.')
+
+    to_url = 'gs://secret-compass-237117-mlengine/test.txt'
+    save_to_remote("test.txt", to_url)

@@ -1,4 +1,3 @@
-
 img_rows, img_cols = 320, 320
 # img_rows_half, img_cols_half = 160, 160
 channel = 4
@@ -38,11 +37,10 @@ valid_names_path = 'gs://%s/data/valid_names.txt' % bucket
 
 vgg16_weights_remote_path = 'gs://%s/models/vgg16_weights_tf_dim_ordering_tf_kernels.h5' % bucket
 
-vgg16_weights_local_path = 'models/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+vgg16_weights_local_path = './vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 
-##############################################################
-
-#fg_names_path = 'Combined_Dataset/Training_set/training_fg_names.txt'
 fg_names_path = 'gs://%s/data/fg_names.txt' % bucket
 
 bg_names_path = 'gs://%s/data/bg_names.txt' % bucket 
+
+checkpoint_models_path = 'gs://%s/models/checkpoints' % bucket
