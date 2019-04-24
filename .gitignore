@@ -44,3 +44,6 @@ venv
 data
 data-archive
 *.swp
+*.swo
+project/tmp-local-model.hd5
+project/trainer/config.py

@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-REQUIRED_PACKAGES = ['keras==2.1.6', 'opencv-contrib-python']
+REQUIRED_PACKAGES = ['keras==2.2.4', 'opencv-contrib-python']
 
 setup(
     name='trainer',
