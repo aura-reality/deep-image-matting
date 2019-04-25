@@ -11,7 +11,7 @@ import tensorflow as tf
 from trainer.config import batch_size
 from trainer.config import fg_path, bg_path, a_path
 from trainer.config import train_names_path, valid_names_path
-from trainer.config import img_cols, img_rows
+from trainer.config import img_cols, img_rows, channel
 from trainer.config import unknown_code
 from trainer.config import fg_names_path, bg_names_path
 from trainer.utils import safe_crop
@@ -114,7 +114,7 @@ class DataGenSequence(Sequence):
         i = idx * batch_size
 
         length = min(batch_size, (len(self.names) - i))
-        batch_x = np.empty((length, img_rows, img_cols, 4), dtype=np.float32)
+        batch_x = np.empty((length, img_rows, img_cols, channel), dtype=np.float32)
         batch_y = np.empty((length, img_rows, img_cols, 2), dtype=np.float32)
 
         for i_batch in range(length):
@@ -134,18 +134,25 @@ class DataGenSequence(Sequence):
             image = safe_crop(image, x, y, crop_size)
             alpha = safe_crop(alpha, x, y, crop_size)
 
-            trimap = generate_trimap(alpha)
+            if channel == 4:
+                trimap = generate_trimap(alpha)
 
             # Flip array left to right randomly (prob=1:1)
             if np.random.random_sample() > 0.5:
                 image = np.fliplr(image)
-                trimap = np.fliplr(trimap)
                 alpha = np.fliplr(alpha)
+                if channel == 4:
+                    trimap = np.fliplr(trimap)
 
             batch_x[i_batch, :, :, 0:3] = image / 255.
-            batch_x[i_batch, :, :, 3] = trimap / 255.
+            if channel == 4:
+                batch_x[i_batch, :, :, 3] = trimap / 255.
 
-            mask = np.equal(trimap, 128).astype(np.float32)
+            if channel == 4:
+                mask = np.equal(trimap, 128).astype(np.float32)
+            else:
+                mask = np.ones((img_rows, img_cols))
+
             batch_y[i_batch, :, :, 0] = alpha / 255.
             batch_y[i_batch, :, :, 1] = mask
 
