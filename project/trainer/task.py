@@ -33,20 +33,17 @@ if __name__ == '__main__':
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
 
+    if test_model:
+        print("Building test model instead of full model")
+        build_encoder_decoder = build_test_encoder_decoder
+        build_refinement = build_test_refinement
+
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
-        if test_model:
-            print("Building test model instead of full model")
-            with tf.device("/cpu:0"):
-                model = build_test_encoder_decoder()
-                model = build_test_refinement(model)
-                if pretrained_path is not None:
-                    model.load_weights(pretrained_path)
-        else: 
-            with tf.device("/cpu:0"):
-                model = build_encoder_decoder()
-                model = build_refinement(model)
+        with tf.device("/cpu:0"):
+            model = build_encoder_decoder()
+            model = build_refinement(model)
             if pretrained_path is not None:
                 model.load_weights(pretrained_path)
             else:
@@ -56,19 +53,12 @@ if __name__ == '__main__':
         # rewrite the callback: saving through the original model and not the multi-gpu model.
         model_checkpoint = MyOtherModelCheckpoint(model, model_checkpoint)
     else:
-        if test_model: 
-            print("Building test model instead of full model")
-            model = build_test_encoder_decoder()
-            final = build_test_refinement(model)
-            if pretrained_path is not None:
-                final.load_weights(pretrained_path)       
-        else: 
-            model = build_encoder_decoder()
-            final = build_refinement(model)
-            if pretrained_path is not None:
-                final.load_weights(pretrained_path)
-            else:
-                migrate_model(final)
+        model = build_encoder_decoder()
+        final = build_refinement(model)
+        if pretrained_path is not None:
+            final.load_weights(pretrained_path)
+        else:
+            migrate_model(final)
 
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
     final.compile(optimizer='nadam', loss=overall_loss, target_tensors=[decoder_target])
