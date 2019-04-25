@@ -8,10 +8,12 @@ from keras.utils import plot_model
 
 from trainer.custom_layers.unpooling_layer import Unpooling
 
+from trainer.config import channel
+
 
 def build_test_encoder_decoder():
     # Encoder
-    input_tensor = Input(shape=(320, 320, 4))
+    input_tensor = Input(shape=(320, 320, channel))
     x = ZeroPadding2D((1, 1))(input_tensor)
     x = Conv2D(64, (3, 3), activation='relu', name='conv1_1')(x)
 
