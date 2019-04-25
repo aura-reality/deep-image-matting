@@ -11,6 +11,7 @@ from trainer.config import patience, batch_size, epochs, num_train_samples, num_
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
+from trainer.test_model import build_test_encoder_decoder, build_test_refinement
 from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
 from trainer.model_checkpoint import MyModelCheckpoint, MyOtherModelCheckpoint
 
@@ -18,10 +19,12 @@ if __name__ == '__main__':
     # Parse arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
+    ap.add_argument("--test", default=False, help="set to True to load smaller test model")
     ap.add_argument("--job-dir", dest="job_dir", help="unused, but passed in by gcloud")
 
     args = vars(ap.parse_args())
     pretrained_path = args["pretrained"]
+    test_model = args["test"]
 
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
@@ -30,6 +33,10 @@ if __name__ == '__main__':
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
 
+    if test_model:
+        print("Building test model instead of full model")
+        build_encoder_decoder = build_test_encoder_decoder
+        build_refinement = build_test_refinement
 
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
