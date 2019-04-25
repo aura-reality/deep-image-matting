@@ -26,15 +26,12 @@ if __name__ == '__main__':
     pretrained_path = args["pretrained"]
     test_model = args["test"]
 
-
-
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
     model_names = os.path.join(checkpoint_models_path, 'checkpoint.{epoch:02d}-{val_loss:.4f}.hdf5')
     model_checkpoint = MyModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
-
 
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())

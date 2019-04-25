@@ -24,7 +24,6 @@ def build_test_encoder_decoder():
     orig_2 = x
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
-
     x = Conv2D(128, (1, 1), activation='relu', padding='same', name='deconv6', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
