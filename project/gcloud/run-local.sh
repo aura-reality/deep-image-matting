@@ -3,4 +3,5 @@ gcloud ai-platform local train \
 	--module-name trainer.task \
 	--job-dir ../models \
 	-- \
-	--test True
+	--test True \
+	--verbosity 'DEBUG'

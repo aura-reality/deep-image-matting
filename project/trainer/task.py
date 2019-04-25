@@ -7,7 +7,7 @@ import tensorflow as tf
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, checkpoint_models_path
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, checkpoint_models_path, log_path
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
@@ -21,13 +21,19 @@ if __name__ == '__main__':
     ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
     ap.add_argument("--test", default=False, help="set to True to load smaller test model")
     ap.add_argument("--job-dir", dest="job_dir", help="unused, but passed in by gcloud")
+    ap.add_argument(
+        '--verbosity',
+        choices=['DEBUG', 'ERROR', 'FATAL', 'INFO', 'WARN'],
+        default='INFO')
 
     args = vars(ap.parse_args())
+
+    tf.logging.set_verbosity(args["verbosity"])
     pretrained_path = args["pretrained"]
     test_model = args["test"]
 
     # Callbacks
-    tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
+    tensor_board = keras.callbacks.TensorBoard(log_dir=log_path, histogram_freq=0, write_graph=True, write_images=True)
     model_names = os.path.join(checkpoint_models_path, 'checkpoint.{epoch:02d}-{val_loss:.4f}.hdf5')
     model_checkpoint = MyModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
