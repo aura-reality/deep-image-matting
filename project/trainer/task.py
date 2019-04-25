@@ -44,20 +44,17 @@ if __name__ == '__main__':
         with tf.device("/cpu:0"):
             model = build_encoder_decoder()
             model = build_refinement(model)
-            if pretrained_path is not None:
-                model.load_weights(pretrained_path)
-            else:
-                migrate_model(model)
-
         final = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
         model_checkpoint = MyOtherModelCheckpoint(model, model_checkpoint)
     else:
         model = build_encoder_decoder()
         final = build_refinement(model)
-        if pretrained_path is not None:
-            final.load_weights(pretrained_path)
-        else:
+
+    if pretrained_path is not None:
+        final.load_weights(pretrained_path)
+    else:
+        if not test_model: 
             migrate_model(final)
 
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
