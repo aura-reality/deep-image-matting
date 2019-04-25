@@ -11,6 +11,7 @@ from trainer.config import patience, batch_size, epochs, num_train_samples, num_
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
+from trainer.test_model import build_test_encoder_decoder, build_test_refinement
 from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
 from trainer.model_checkpoint import MyModelCheckpoint, MyOtherModelCheckpoint
 
@@ -18,10 +19,14 @@ if __name__ == '__main__':
     # Parse arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
+    ap.add_argument("--test", default=False, help="set to True to load smaller test model")
     ap.add_argument("--job-dir", dest="job_dir", help="unused, but passed in by gcloud")
 
     args = vars(ap.parse_args())
     pretrained_path = args["pretrained"]
+    test_model = args["test"]
+
+
 
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
@@ -34,9 +39,17 @@ if __name__ == '__main__':
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
-        with tf.device("/cpu:0"):
-            model = build_encoder_decoder()
-            model = build_refinement(model)
+        if test_model:
+            print("Building test model instead of full model")
+            with tf.device("/cpu:0"):
+                model = build_test_encoder_decoder()
+                model = build_test_refinement(model)
+                if pretrained_path is not None:
+                    model.load_weights(pretrained_path)
+        else: 
+            with tf.device("/cpu:0"):
+                model = build_encoder_decoder()
+                model = build_refinement(model)
             if pretrained_path is not None:
                 model.load_weights(pretrained_path)
             else:
@@ -46,12 +59,19 @@ if __name__ == '__main__':
         # rewrite the callback: saving through the original model and not the multi-gpu model.
         model_checkpoint = MyOtherModelCheckpoint(model, model_checkpoint)
     else:
-        model = build_encoder_decoder()
-        final = build_refinement(model)
-        if pretrained_path is not None:
-            final.load_weights(pretrained_path)
-        else:
-            migrate_model(final)
+        if test_model: 
+            print("Building test model instead of full model")
+            model = build_test_encoder_decoder()
+            final = build_test_refinement(model)
+            if pretrained_path is not None:
+                final.load_weights(pretrained_path)       
+        else: 
+            model = build_encoder_decoder()
+            final = build_refinement(model)
+            if pretrained_path is not None:
+                final.load_weights(pretrained_path)
+            else:
+                migrate_model(final)
 
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
     final.compile(optimizer='nadam', loss=overall_loss, target_tensors=[decoder_target])
