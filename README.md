@@ -9,7 +9,7 @@ Create a virtualenv and install the dependencies
 ```bash
 virtualenv -p python3 venv
 source venv/bin/activate
-python -r requirements.txt
+pip install -r requirements.txt
 ```
 
 On mac, set the following environment variable:
