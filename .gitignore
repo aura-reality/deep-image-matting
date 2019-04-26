@@ -47,3 +47,4 @@ data-archive
 *.swo
 project/tmp-local-model.hd5
 project/trainer/config.py
+project/cache

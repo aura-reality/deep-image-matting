@@ -37,7 +37,7 @@ valid_names_path = 'gs://%s/data/valid_names.txt' % bucket
 
 vgg16_weights_remote_path = 'gs://%s/models/vgg16_weights_tf_dim_ordering_tf_kernels.h5' % bucket
 
-vgg16_weights_local_path = './vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+vgg16_weights_local_path = './cache/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 
 fg_names_path = 'gs://%s/data/fg_names.txt' % bucket
 

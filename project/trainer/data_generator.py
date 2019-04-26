@@ -56,10 +56,10 @@ def composite4(fg, bg, a, w, h):
 
 
 def process(im_name, bg_name):
-    im = mio.imread(fg_path + im_name)
-    a = mio.imread(a_path + im_name, 0)
+    im = mio.imread(fg_path + im_name, cache_dir=os.path.join('cache', 'fg'))
+    a = mio.imread(a_path + im_name, 0, cache_dir=os.path.join('cache', 'a'))
     h, w = im.shape[:2]
-    bg = mio.imread(bg_path + bg_name)
+    bg = mio.imread(bg_path + bg_name, cache_dir=os.path.join('cache', 'bg'))
     bh, bw = bg.shape[:2]
     wratio = w / bw
     hratio = h / bh
