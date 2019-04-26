@@ -11,6 +11,7 @@ from trainer.config import patience, batch_size, epochs, num_train_samples, num_
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
+from trainer.test_model import build_test_encoder_decoder, build_test_refinement
 from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
 from trainer.model_checkpoint import MyModelCheckpoint, MyOtherModelCheckpoint
 
@@ -34,23 +35,20 @@ if __name__ == '__main__':
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
         with tf.device("/cpu:0"):
-            model = build_encoder_decoder()
-            model = build_refinement(model)
+            model = build_test_encoder_decoder()
+            model = build_test_refinement(model)
             if pretrained_path is not None:
                 model.load_weights(pretrained_path)
-            else:
-                migrate_model(model)
 
         final = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
         model_checkpoint = MyOtherModelCheckpoint(model, model_checkpoint)
     else:
-        model = build_encoder_decoder()
-        final = build_refinement(model)
+        model = build_test_encoder_decoder()
+        final = build_test_refinement(model)
         if pretrained_path is not None:
             final.load_weights(pretrained_path)
-        else:
-            migrate_model(final)
+
 
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
     final.compile(optimizer='nadam', loss=overall_loss, target_tensors=[decoder_target])
