@@ -6,10 +6,10 @@
 
 import os
 import random
-from config import fg_path, a_path, bg_path
-from config import fg_names_path, bg_names_path
-from config import train_names_path, valid_names_path
-from config import num_bgs_per_fg, training_fraction
+from trainer.config import fg_path, a_path, bg_path
+from trainer.config import fg_names_path, bg_names_path
+from trainer.config import train_names_path, valid_names_path
+from trainer.config import num_bgs_per_fg, training_fraction
 from math import floor, ceil
 from random import shuffle
 
@@ -21,9 +21,9 @@ def shuffle_data(num_fgs):
     num_train_samples = int(ceil(training_fraction * num_samples))
     num_valid_samples = num_samples - num_train_samples
 
-    from config import num_valid_samples as config_num_valid_samples
-    from config import num_train_samples as config_num_train_samples
-    from config import num_samples as config_num_samples
+    from trainer.config import num_valid_samples as config_num_valid_samples
+    from trainer.config import num_train_samples as config_num_train_samples
+    from trainer.config import num_samples as config_num_samples
     
     # Validate the config
     a = num_samples != config_num_samples
@@ -39,9 +39,9 @@ def shuffle_data(num_fgs):
             names.append(str(fcount) + '_' + str(bcount) + '.png')
             bcount += 1
 
-    from config import num_valid_samples as config_num_valid_samples
-    from config import num_train_samples as config_num_train_samples
-    from config import num_samples as config_num_samples
+    from trainer.config import num_valid_samples as config_num_valid_samples
+    from trainer.config import num_train_samples as config_num_train_samples
+    from trainer.config import num_samples as config_num_samples
 
     valid_names = random.sample(names, num_valid_samples)
     train_names = [n for n in names if n not in valid_names]

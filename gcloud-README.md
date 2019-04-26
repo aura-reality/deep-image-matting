@@ -6,8 +6,22 @@
   * It intermittently works for me; I get lots of retries (maybe due to bad internet).
 * **@Erez: recommended / easier option:** If the script doesn't work, you can always [upload the files through the browser]( https://cloud.google.com/storage/docs/uploading-objects).
   * Upload to `gs://secret-compass-237117-mlengine/data` (i.e. mirror it with your local directory)
+* Send me your `config.py`
 
 ## Download credentials
 * To interact with google cloud with python (i.e. to train), you may need to download credentials.
   * See the section titled 'Setting up authentication' [here](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python)
 
+## Submit a job to google cloud
+```
+cd project
+./gcloud/submit-training.sh
+```
+
+## View the job through the console
+From here, you can see stats and stop the job.
+
+In the main menu (three lines):
+* Artificial Intelligence => AI Platform => Jobs
+
+Or just follow this: https://console.cloud.google.com/mlengine/jobs?project=secret-compass-237117

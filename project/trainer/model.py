@@ -1,83 +1,82 @@
 import keras.backend as K
 import tensorflow as tf
-from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Reshape, \
-    Concatenate, Lambda
+from keras.layers import Input, Conv2D, UpSampling2D, BatchNormalization, ZeroPadding2D, MaxPooling2D, Concatenate, \
+    Reshape, Lambda
 from keras.models import Model
 from keras.utils import multi_gpu_model
 from keras.utils import plot_model
 
-from custom_layers.unpooling_layer import Unpooling
+from trainer.custom_layers.unpooling_layer import Unpooling
+
+from trainer.config import channel
 
 
 def build_encoder_decoder():
-    kernel = 3
-
     # Encoder
-    #
-    input_tensor = Input(shape=(320, 320, 4))
+    input_tensor = Input(shape=(320, 320, channel))
     x = ZeroPadding2D((1, 1))(input_tensor)
-    x = Conv2D(64, (kernel, kernel), activation='relu', name='conv1_1')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv1_1')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(64, (kernel, kernel), activation='relu', name='conv1_2')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv1_2')(x)
     orig_1 = x
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(128, (kernel, kernel), activation='relu', name='conv2_1')(x)
+    x = Conv2D(128, (3, 3), activation='relu', name='conv2_1')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(128, (kernel, kernel), activation='relu', name='conv2_2')(x)
+    x = Conv2D(128, (3, 3), activation='relu', name='conv2_2')(x)
     orig_2 = x
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(256, (kernel, kernel), activation='relu', name='conv3_1')(x)
+    x = Conv2D(256, (3, 3), activation='relu', name='conv3_1')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(256, (kernel, kernel), activation='relu', name='conv3_2')(x)
+    x = Conv2D(256, (3, 3), activation='relu', name='conv3_2')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(256, (kernel, kernel), activation='relu', name='conv3_3')(x)
+    x = Conv2D(256, (3, 3), activation='relu', name='conv3_3')(x)
     orig_3 = x
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', name='conv4_1')(x)
+    x = Conv2D(512, (3, 3), activation='relu', name='conv4_1')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', name='conv4_2')(x)
+    x = Conv2D(512, (3, 3), activation='relu', name='conv4_2')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', name='conv4_3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', name='conv4_3')(x)
     orig_4 = x
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', name='conv5_1')(x)
+    x = Conv2D(512, (3, 3), activation='relu', name='conv5_1')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', name='conv5_2')(x)
+    x = Conv2D(512, (3, 3), activation='relu', name='conv5_2')(x)
     x = ZeroPadding2D((1, 1))(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', name='conv5_3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', name='conv5_3')(x)
     orig_5 = x
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
 
     # Decoder
-    #
+    # x = Conv2D(4096, (7, 7), activation='relu', padding='valid', name='conv6')(x)
+    # x = BatchNormalization()(x)
+    # x = UpSampling2D(size=(7, 7))(x)
+
+    x = Conv2D(512, (1, 1), activation='relu', padding='same', name='deconv6', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
     the_shape = K.int_shape(orig_5)
     shape = (1, the_shape[1], the_shape[2], the_shape[3])
     origReshaped = Reshape(shape)(orig_5)
+    # print('origReshaped.shape: ' + str(K.int_shape(origReshaped)))
     xReshaped = Reshape(shape)(x)
+    # print('xReshaped.shape: ' + str(K.int_shape(xReshaped)))
     together = Concatenate(axis=1)([origReshaped, xReshaped])
+    # print('together.shape: ' + str(K.int_shape(together)))
     x = Unpooling()(together)
-    x = Conv2D(512, (kernel, kernel), activation='relu', padding='same', name='deconv5_1',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', padding='same', name='deconv5_2',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(512, (kernel, kernel), activation='relu', padding='same', name='deconv5_3',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
 
+    x = Conv2D(512, (5, 5), activation='relu', padding='same', name='deconv5', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
     the_shape = K.int_shape(orig_4)
     shape = (1, the_shape[1], the_shape[2], the_shape[3])
@@ -85,19 +84,10 @@ def build_encoder_decoder():
     xReshaped = Reshape(shape)(x)
     together = Concatenate(axis=1)([origReshaped, xReshaped])
     x = Unpooling()(together)
-    x = Conv2D(256, (kernel, kernel), activation='relu', padding='same', name='deconv4_1',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(256, (kernel, kernel), activation='relu', padding='same', name='deconv4_2',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(256, (kernel, kernel), activation='relu', padding='same', name='deconv4_3',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
 
+    x = Conv2D(256, (5, 5), activation='relu', padding='same', name='deconv4', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
     the_shape = K.int_shape(orig_3)
     shape = (1, the_shape[1], the_shape[2], the_shape[3])
@@ -105,19 +95,10 @@ def build_encoder_decoder():
     xReshaped = Reshape(shape)(x)
     together = Concatenate(axis=1)([origReshaped, xReshaped])
     x = Unpooling()(together)
-    x = Conv2D(128, (kernel, kernel), activation='relu', padding='same', name='deconv3_1',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(128, (kernel, kernel), activation='relu', padding='same', name='deconv3_2',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(128, (kernel, kernel), activation='relu', padding='same', name='deconv3_3',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
 
+    x = Conv2D(128, (5, 5), activation='relu', padding='same', name='deconv3', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
     the_shape = K.int_shape(orig_2)
     shape = (1, the_shape[1], the_shape[2], the_shape[3])
@@ -125,15 +106,10 @@ def build_encoder_decoder():
     xReshaped = Reshape(shape)(x)
     together = Concatenate(axis=1)([origReshaped, xReshaped])
     x = Unpooling()(together)
-    x = Conv2D(64, (kernel, kernel), activation='relu', padding='same', name='deconv2_1',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(64, (kernel, kernel), activation='relu', padding='same', name='deconv2_2',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
 
+    x = Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv2', kernel_initializer='he_normal',
+               bias_initializer='zeros')(x)
+    x = BatchNormalization()(x)
     x = UpSampling2D(size=(2, 2))(x)
     the_shape = K.int_shape(orig_1)
     shape = (1, the_shape[1], the_shape[2], the_shape[3])
@@ -141,16 +117,11 @@ def build_encoder_decoder():
     xReshaped = Reshape(shape)(x)
     together = Concatenate(axis=1)([origReshaped, xReshaped])
     x = Unpooling()(together)
-    x = Conv2D(64, (kernel, kernel), activation='relu', padding='same', name='deconv1_1',
-               kernel_initializer='he_normal',
-               bias_initializer='zeros')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(64, (kernel, kernel), activation='relu', padding='same', name='deconv1_2',
-               kernel_initializer='he_normal',
+    x = Conv2D(64, (5, 5), activation='relu', padding='same', name='deconv1', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
     x = BatchNormalization()(x)
 
-    x = Conv2D(1, (kernel, kernel), activation='sigmoid', padding='same', name='pred', kernel_initializer='he_normal',
+    x = Conv2D(1, (5, 5), activation='sigmoid', padding='same', name='pred', kernel_initializer='he_normal',
                bias_initializer='zeros')(x)
 
     model = Model(inputs=input_tensor, outputs=x)

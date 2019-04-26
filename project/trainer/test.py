@@ -3,8 +3,8 @@ import argparse
 import cv2 as cv
 import numpy as np
 
-from model import build_encoder_decoder, build_refinement
-from utils import get_final_output
+from trainer.model import build_encoder_decoder, build_refinement
+from trainer.utils import get_final_output
 
 # python test.py -i "images/image.png" -t "images/trimap.png"
 if __name__ == '__main__':

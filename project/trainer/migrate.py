@@ -1,9 +1,9 @@
 import keras.backend as K
 import numpy as np
 
-from config import channel
-from model import build_encoder_decoder
-from vgg16 import vgg16_model
+from trainer.config import channel
+from trainer.model import build_encoder_decoder
+from trainer.vgg16 import vgg16_model
 
 
 def migrate_model(new_model):

@@ -3,7 +3,7 @@ import os
 import cv2 as cv
 import numpy as np
 
-from model import build_encoder_decoder, build_refinement
+from trainer.model import build_encoder_decoder, build_refinement
 
 if __name__ == '__main__':
     pretrained_path = 'models/final.42-0.0398.hdf5'

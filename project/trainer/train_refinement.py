@@ -2,10 +2,10 @@ import keras
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.optimizers import SGD
 
-from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
-from data_generator import train_gen, valid_gen
-from model import build_encoder_decoder, build_refinement
-from utils import custom_loss_wrapper, get_available_cpus
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples
+from trainer.data_generator import train_gen, valid_gen
+from trainer.model import build_encoder_decoder, build_refinement
+from trainer.utils import custom_loss_wrapper, get_available_cpus
 
 if __name__ == '__main__':
     checkpoint_models_path = 'models/'

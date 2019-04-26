@@ -8,9 +8,9 @@ import numpy as np
 
 import sys
 
-from config import img_rows, img_cols, unknown_code
-from model import build_encoder_decoder, build_refinement
-from utils import get_final_output, safe_crop, draw_str
+from trainer.config import img_rows, img_cols, unknown_code
+from trainer.model import build_encoder_decoder, build_refinement
+from trainer.utils import get_final_output, safe_crop, draw_str
 
 def composite4(fg, bg, a, w, h):
     fg = np.array(fg, np.float32)

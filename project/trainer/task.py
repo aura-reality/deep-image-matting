@@ -1,43 +1,42 @@
 import argparse
+import math
+import os
 
 import keras
 import tensorflow as tf
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from config import patience, batch_size, epochs, num_train_samples, num_valid_samples
-from data_generator import train_gen, valid_gen
-from migrate import migrate_model
-from segnet import build_encoder_decoder, build_refinement
-from utils import overall_loss, get_available_cpus, get_available_gpus
-
-import math
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, checkpoint_models_path
+from trainer.data_generator import train_gen, valid_gen
+from trainer.migrate import migrate_model
+from trainer.segnet import build_encoder_decoder, build_refinement
+from trainer.test_model import build_test_encoder_decoder, build_test_refinement
+from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
+from trainer.model_checkpoint import MyModelCheckpoint, MyOtherModelCheckpoint
 
 if __name__ == '__main__':
-    checkpoint_models_path = 'models/'
     # Parse arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
+    ap.add_argument("--test", default=False, help="set to True to load smaller test model")
+    ap.add_argument("--job-dir", dest="job_dir", help="unused, but passed in by gcloud")
+
     args = vars(ap.parse_args())
     pretrained_path = args["pretrained"]
+    test_model = args["test"]
 
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
-    model_names = checkpoint_models_path + 'final.{epoch:02d}-{val_loss:.4f}.hdf5'
-    model_checkpoint = ModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
+    model_names = os.path.join(checkpoint_models_path, 'checkpoint.{epoch:02d}-{val_loss:.4f}.hdf5')
+    model_checkpoint = MyModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
 
-
-    class MyCbk(keras.callbacks.Callback):
-        def __init__(self, model):
-            keras.callbacks.Callback.__init__(self)
-            self.model_to_save = model
-
-        def on_epoch_end(self, epoch, logs=None):
-            fmt = checkpoint_models_path + 'final.%02d-%.4f.hdf5'
-            self.model_to_save.save(fmt % (epoch, logs['val_loss']))
-
+    if test_model:
+        print("Building test model instead of full model")
+        build_encoder_decoder = build_test_encoder_decoder
+        build_refinement = build_test_refinement
 
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
@@ -52,7 +51,7 @@ if __name__ == '__main__':
 
         final = multi_gpu_model(model, gpus=num_gpu)
         # rewrite the callback: saving through the original model and not the multi-gpu model.
-        model_checkpoint = MyCbk(model)
+        model_checkpoint = MyOtherModelCheckpoint(model, model_checkpoint)
     else:
         model = build_encoder_decoder()
         final = build_refinement(model)
