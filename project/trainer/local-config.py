@@ -1,6 +1,6 @@
 img_rows, img_cols = 320, 320
 # img_rows_half, img_cols_half = 160, 160
-channel = 4
+channel = 3
 batch_size = 8 
 epochs = 1000
 patience = 50
