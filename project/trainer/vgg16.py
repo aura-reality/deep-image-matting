@@ -58,6 +58,7 @@ def vgg16_model(img_rows, img_cols, channel=3):
     # Loads ImageNet pre-trained data
     my_io.cache(vgg16_weights_remote_path, vgg16_weights_local_path)
     model.load_weights(vgg16_weights_local_path)
+    print("Finished loading VGG-16 weights")
 
     return model
 

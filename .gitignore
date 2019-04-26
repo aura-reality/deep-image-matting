@@ -48,3 +48,4 @@ data-archive
 project/tmp-local-model.hd5
 project/trainer/config.py
 .ipynb_checkpoints
+project/cache
