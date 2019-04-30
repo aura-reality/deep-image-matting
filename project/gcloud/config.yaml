@@ -1,2 +1,3 @@
 trainingInput:
-  scaleTier: BASIC
+  scaleTier: CUSTOM
+  masterType: standard_gpu

@@ -7,11 +7,11 @@ import tensorflow as tf
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, bg_composite
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
-from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
+from trainer.utils import overall_loss, alpha_prediction_loss, get_available_cpus, get_available_gpus
 from trainer.model_checkpoint import MyModelCheckpoint, MyOtherModelCheckpoint
 
 if __name__ == '__main__':
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
-        print("Building multi-gpu model")
+        print(num_gpu + " GPUs found. Building multi-gpu model")
         with tf.device("/cpu:0"):
             model = build_encoder_decoder()
             model = build_refinement(model)
@@ -57,7 +57,11 @@ if __name__ == '__main__':
             migrate_model(final)
 
     decoder_target = tf.placeholder(dtype='float32', shape=(None, None, None, None))
-    final.compile(optimizer='nadam', loss=overall_loss, target_tensors=[decoder_target])
+
+    if bg_composite: 
+        final.compile(optimizer='nadam', loss=overall_loss, target_tensors=[decoder_target])
+    else:
+        final.compile(optimizer='nadam', loss=alpha_prediction_loss, target_tensors=[decoder_target]) 
 
     print(final.summary())
 
