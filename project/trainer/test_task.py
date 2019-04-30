@@ -7,7 +7,7 @@ import tensorflow as tf
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, checkpoint_models_path
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
@@ -19,14 +19,15 @@ if __name__ == '__main__':
     # Parse arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
-    ap.add_argument("--job-dir", dest="job_dir", help="unused, but passed in by gcloud")
+    ap.add_argument("--job-dir", dest="job_dir", help="job-dir contains task module, checkpoint, logs")
 
     args = vars(ap.parse_args())
     pretrained_path = args["pretrained"]
+    job_dir = args["job_dir"]
 
     # Callbacks
-    tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
-    model_names = os.path.join(checkpoint_models_path, 'checkpoint.{epoch:02d}-{val_loss:.4f}.hdf5')
+    tensor_board = keras.callbacks.TensorBoard(log_dir=job_dir + '/logs', histogram_freq=0, write_graph=True, write_images=True)
+    model_names = os.path.join(job_dir + '/checkpoints', 'checkpoint.{epoch:02d}-{val_loss:.4f}.hdf5')
     model_checkpoint = MyModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 4), verbose=1)
@@ -34,10 +35,12 @@ if __name__ == '__main__':
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
     if num_gpu >= 2:
+        print("Building multi-gpu model")
         with tf.device("/cpu:0"):
             model = build_test_encoder_decoder()
             model = build_test_refinement(model)
             if pretrained_path is not None:
+                print("Loading pretrained model weights")
                 model.load_weights(pretrained_path)
 
         final = multi_gpu_model(model, gpus=num_gpu)
@@ -47,6 +50,7 @@ if __name__ == '__main__':
         model = build_test_encoder_decoder()
         final = build_test_refinement(model)
         if pretrained_path is not None:
+            print("Loading pretrained model weights")
             final.load_weights(pretrained_path)
 
 
