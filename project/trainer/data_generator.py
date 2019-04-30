@@ -58,8 +58,19 @@ def composite4(fg, bg, a, w, h):
 def process(im_name, bg_name):
     im = mio.imread(fg_path + im_name, cache_dir=os.path.join('cache', 'fg'))
     a = mio.imread(a_path + im_name, 0, cache_dir=os.path.join('cache', 'a'))
-    h, w = im.shape[:2]
     bg = mio.imread(bg_path + bg_name, cache_dir=os.path.join('cache', 'bg'))
+
+    if im is None or a is None or bg is None:
+        if im is None:
+            bad = fg_path + im_name
+        elif a is None:
+            bad = a_path + im_name
+        else:
+            bad = bg_path + bg_name
+        print("Bad image: %s" % bad)
+        return None
+
+    h, w = im.shape[:2]
     bh, bw = bg.shape[:2]
     wratio = w / bw
     hratio = h / bh
@@ -117,13 +128,21 @@ class DataGenSequence(Sequence):
         batch_x = np.empty((length, img_rows, img_cols, channel), dtype=np.float32)
         batch_y = np.empty((length, img_rows, img_cols, 2), dtype=np.float32)
 
+        bad_images = []
         for i_batch in range(length):
             name = self.names[i]
             fcount = int(name.split('.')[0].split('_')[0])
             bcount = int(name.split('.')[0].split('_')[1])
             im_name = fg_files[fcount]
             bg_name = bg_files[bcount]
-            image, alpha, fg, bg = process(im_name, bg_name)
+            processed = process(im_name, bg_name)
+            if processed is None:
+                bad_images.append(i_batch)
+                print("Skipping bad image")
+                i += 1
+                continue
+
+            image, alpha, fg, bg = processed
 
             # crop size 320:640:480 = 1:1:1
             different_sizes = [(320, 320), (480, 480), (640, 640)]
@@ -157,6 +176,13 @@ class DataGenSequence(Sequence):
             batch_y[i_batch, :, :, 1] = mask
 
             i += 1
+
+        if bad_images:
+            if len(bad_images) == length:
+                print("Empty batch!")
+            else:
+                np.delete(batch_x, bad_images, 0)
+                np.delete(batch_y, bad_images, 0)
 
         return batch_x, batch_y
 
