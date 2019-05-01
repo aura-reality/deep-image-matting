@@ -126,5 +126,5 @@ class MyOtherModelCheckpoint(keras.callbacks.Callback):
         self.model_to_save = model
 
     def on_epoch_end(self, epoch, logs=None):
-        delegate.model = self.model_to_save
-        delegate.on_epoch_end(epoch, logs)
+        self.delegate.model = self.model_to_save
+        self.delegate.on_epoch_end(epoch, logs)
