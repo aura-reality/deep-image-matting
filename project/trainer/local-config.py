@@ -42,5 +42,3 @@ vgg16_weights_local_path = './cache/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 fg_names_path = '../data/fg_names.txt'
 
 bg_names_path = '../data/bg_names.txt'
-
-checkpoint_models_path = '../models'

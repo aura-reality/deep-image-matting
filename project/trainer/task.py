@@ -122,7 +122,7 @@ class StagelessStage(Stage):
 if __name__ == '__main__':
     # Parse arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-p", "--pretrained", help="path to save pretrained model files")
+    ap.add_argument("-p", "--pretrained", help="path to saved pretrained model")
     ap.add_argument("--job-dir", dest="job_dir", help="job-dir contains task module, checkpoint, logs")
     ap.add_argument("--stage", default="stageless", choices=["encoder_decoder",
                                                              "refinement",
@@ -175,7 +175,10 @@ if __name__ == '__main__':
     print("Running the '%s' stage" % stage)
     num_cpu = get_available_cpus()
     workers = int(round(num_cpu / 2))
-    print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu, num_cpu, workers, checkpoint_models_path))
+    print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu,
+                                                                               num_cpu,
+                                                                               workers,
+                                                                              model_names))
 
     # Final callbacks
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
