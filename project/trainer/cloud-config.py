@@ -13,6 +13,7 @@ num_valid_samples = 73
 unknown_code = 128
 epsilon = 1e-6
 epsilon_sqr = epsilon ** 2
+skip_crop = True
 
 ##############################################################
 # Set your paths here

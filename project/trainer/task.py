@@ -8,7 +8,7 @@ import tensorflow as tf
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, skip_crop
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
@@ -175,10 +175,7 @@ if __name__ == '__main__':
     print("Running the '%s' stage" % stage)
     num_cpu = get_available_cpus()
     workers = int(round(num_cpu / 2))
-    print('num_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(num_gpu,
-                                                                               num_cpu,
-                                                                               workers,
-                                                                              model_names))
+    print('skip_crop={}\nnum_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(skip_crop, num_gpu, num_cpu, workers, model_names))
 
     # Final callbacks
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
