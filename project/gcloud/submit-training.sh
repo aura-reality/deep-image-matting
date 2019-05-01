@@ -11,4 +11,6 @@ gcloud ai-platform jobs submit training $JOB_NAME \
 	--python-version 3.5 \
 	--runtime-version 1.13 \
         --config gcloud/config.yaml \
-        --stream-logs
+        --stream-logs \
+	-- \
+	--stage encoder_decoder
