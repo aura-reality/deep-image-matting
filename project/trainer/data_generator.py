@@ -201,10 +201,10 @@ class DataGenSequence(Sequence):
 
         if bad_images:
             if len(bad_images) == length:
-                print("Empty batch!")
+                print("WARNING: Empty batch!")
             else:
-                np.delete(batch_x, bad_images, 0)
-                np.delete(batch_y, bad_images, 0)
+                batch_x = np.delete(batch_x, bad_images, 0)
+                batch_y = np.delete(batch_y, bad_images, 0)
 
         return batch_x, batch_y
 
