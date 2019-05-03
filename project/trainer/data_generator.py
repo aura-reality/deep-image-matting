@@ -15,7 +15,7 @@ from trainer.config import img_cols, img_rows, channel
 from trainer.config import unknown_code
 from trainer.config import fg_names_path, bg_names_path
 from trainer.config import skip_crop
-from trainer.utils import safe_crop, crop
+from trainer.utils import safe_crop, crop, resize
 import trainer.my_io as mio
 
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
@@ -73,15 +73,9 @@ def process(im_name, bg_name):
 
     h, w = im.shape[:2]
     if skip_crop:
-        if h > img_rows and w > img_cols:
-            if h <= w:
-                w = math.ceil(w / h * img_rows)
-                h = img_rows
-            else:
-                h = math.ceil(h / w * img_cols)
-                w = img_cols
-            im = cv.resize(src=im, dsize=(w, h), interpolation=cv.INTER_CUBIC)
-            a = cv.resize(src=a, dsize=(w, h), interpolation=cv.INTER_CUBIC)
+        keep_aspect_ratio = np.random.random_sample() > 0.5
+        im = resize(im, (img_rows, img_cols), keep_aspect_ratio=keep_aspect_ratio)
+        a = resize(a, (img_rows, img_cols), keep_aspect_ratio=keep_aspect_ratio)
         h, w = im.shape[:2]
 
     bh, bw = bg.shape[:2]
@@ -221,11 +215,12 @@ def valid_gen():
 
 if __name__ == '__main__':
     i = 0
-    for batch_x, _ in train_gen():
+    for batch_x, batch_y in train_gen():
         for j in range(batch_x.shape[0]):
-            cv.imshow('image',batch_x[j, :, :, 0:3])
             if channel == 4:
                 cv.imshow('trimap',batch_x[j, :, :, 3])
+            cv.imshow('mask', batch_y[j, :, :, 0])
+            cv.imshow('image',batch_x[j, :, :, 0:3])
             cv.waitKey(0)
             cv.destroyAllWindows()
             print(i)
