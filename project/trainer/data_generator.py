@@ -8,7 +8,7 @@ import numpy as np
 from keras.utils import Sequence
 import tensorflow as tf
 
-from trainer.config import batch_size
+import trainer.config as config
 from trainer.config import fg_path, bg_path, a_path
 from trainer.config import train_names_path, valid_names_path
 from trainer.config import img_cols, img_rows, channel
@@ -112,7 +112,7 @@ def random_choice(trimap, crop_size=(320, 320)):
 
 
 class DataGenSequence(Sequence):
-    def __init__(self, usage):
+    def __init__(self, batch_size, usage):
         self.usage = usage
 
         if usage == 'train':
@@ -122,16 +122,17 @@ class DataGenSequence(Sequence):
         else:
             raise ValueError(usage)
 
+        self.batch_size = batch_size
         self.names = mio.read_lines(filename)
         np.random.shuffle(self.names)
 
     def __len__(self):
-        return int(np.ceil(len(self.names) / float(batch_size)))
+        return int(np.ceil(len(self.names) / float(self.batch_size)))
 
     def __getitem__(self, idx):
-        i = idx * batch_size
+        i = idx * self.batch_size
 
-        length = min(batch_size, (len(self.names) - i))
+        length = min(self.batch_size, (len(self.names) - i))
         batch_x = np.empty((length, img_rows, img_cols, channel), dtype=np.float32)
         batch_y = np.empty((length, img_rows, img_cols, 2), dtype=np.float32)
 
@@ -206,16 +207,16 @@ class DataGenSequence(Sequence):
         np.random.shuffle(self.names)
 
 
-def train_gen():
-    return DataGenSequence('train')
+def train_gen(batch_size=config.batch_size):
+    return DataGenSequence(batch_size, 'train')
 
 
-def valid_gen():
-    return DataGenSequence('valid')
+def valid_gen(batch_size=config.batch_size):
+    return DataGenSequence(batch_size, 'valid')
 
 if __name__ == '__main__':
     i = 0
-    for batch_x, batch_y in train_gen():
+    for batch_x, batch_y in train_gen(batch_size=1):
         for j in range(batch_x.shape[0]):
             if channel == 4:
                 cv.imshow('trimap',batch_x[j, :, :, 3])
