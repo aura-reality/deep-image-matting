@@ -118,10 +118,8 @@ def resize(mat, size, keep_aspect_ratio=True):
                 h = math.ceil(h / w * img_cols)
                 w = img_cols
             mat = cv.resize(src=mat, dsize=(w, h), interpolation=cv.INTER_CUBIC)
-            print("resize!")
     elif (h, w) != (img_rows, img_cols):
         mat = cv.resize(src=mat, dsize=(img_cols, img_rows), interpolation=cv.INTER_CUBIC)
-        print("skew!")
 
     return mat
 
