@@ -1,4 +1,5 @@
 import multiprocessing
+import math
 
 import cv2 as cv
 import keras.backend as K
@@ -105,6 +106,24 @@ def safe_crop(mat, x, y, crop_size=(img_rows, img_cols)):
         ret = cv.resize(ret, dsize=(img_rows, img_cols), interpolation=cv.INTER_NEAREST)
     return ret
 
+def resize(mat, size, keep_aspect_ratio=True):
+    imgs_rows, img_cols = size
+    h, w = mat.shape[:2]
+    if keep_aspect_ratio:
+        if (h != img_rows and w != img_cols) or h < img_rows or w < img_cols:
+            if h <= w:
+                w = math.ceil(w / h * img_rows)
+                h = img_rows
+            else:
+                h = math.ceil(h / w * img_cols)
+                w = img_cols
+            mat = cv.resize(src=mat, dsize=(w, h), interpolation=cv.INTER_CUBIC)
+            print("resize!")
+    elif (h, w) != (img_rows, img_cols):
+        mat = cv.resize(src=mat, dsize=(img_cols, img_rows), interpolation=cv.INTER_CUBIC)
+        print("skew!")
+
+    return mat
 
 def draw_str(dst, target, s):
     x, y = target
