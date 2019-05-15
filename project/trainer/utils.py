@@ -23,6 +23,7 @@ def overall_loss(y_true, y_pred):
 # predicted alpha values at each pixel. However, due to the non-differentiable property of
 # absolute values, we use the following loss function to approximate it.
 def alpha_prediction_loss(y_true, y_pred):
+    mask = y_true[:, :, :, 1]
     diff = y_pred[:, :, :, 0] - y_true[:, :, :, 0]
     diff = diff * mask
     num_pixels = K.sum(mask)
