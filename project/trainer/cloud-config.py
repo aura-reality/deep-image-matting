@@ -15,7 +15,8 @@ epsilon = 1e-6
 epsilon_sqr = epsilon ** 2
 skip_crop = True
 reuse_backgrounds = True
-w_l = 0.5
+composite_backgrounds = False
+loss_ratio = .5 #mix between alpha-loss and compositional-loss
 
 ##############################################################
 # Set your paths here
