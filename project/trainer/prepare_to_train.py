@@ -10,10 +10,11 @@ from trainer.config import fg_path, a_path, bg_path
 from trainer.config import fg_names_path, bg_names_path
 from trainer.config import train_names_path, valid_names_path
 from trainer.config import num_bgs_per_fg, training_fraction
+from trainer.config import reuse_backgrounds
 from math import floor, ceil
-from random import shuffle
+from random import shuffle, choice
 
-def shuffle_data(num_fgs):
+def shuffle_data(num_fgs, num_bgs):
     # num_fgs = 431
     # num_bgs = 43100
     # num_bgs_per_fg = 100
@@ -36,7 +37,10 @@ def shuffle_data(num_fgs):
     bcount = 0
     for fcount in range(num_fgs):
         for i in range(num_bgs_per_fg):
-            names.append(str(fcount) + '_' + str(bcount) + '.png')
+            if reuse_backgrounds:               
+                names.append(str(fcount) + '_' + str(bcount % num_bgs) + '.png')
+            else:
+                names.append(str(fcount) + '_' + str(bcount) + '.png')
             bcount += 1
 
     from trainer.config import num_valid_samples as config_num_valid_samples
@@ -64,8 +68,9 @@ if __name__ == '__main__':
 
     # (0) Validate
     #
-    if len(fg_files) * num_bgs_per_fg > len(bg_files):
-        raise Exception("Not enough backgrounds (lower num_bgs_per_fg to a maximum of {}".format(floor(len(bg_files) / len(fg_files))))
+
+    if (len(fg_files) * num_bgs_per_fg > len(bg_files)) and not reuse_backgrounds:
+        raise Exception("Not enough backgrounds. Set reuse_backgrounds=true or lower num_bgs_per_fg to a maximum of {}".format(floor(len(bg_files) / len(fg_files))))
 
     if len(a_files) != len(fg_files):
         raise Exception("There should be as many masks as foregrounds!")
@@ -86,4 +91,4 @@ if __name__ == '__main__':
 
     # (2) Assign each foreground its backgrounds (and store the reuslts in test_names.txt and
     # valid_names.txt)
-    shuffle_data(len(fg_files))
+    shuffle_data(len(fg_files), len(bg_files))
