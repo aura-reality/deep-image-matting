@@ -16,6 +16,9 @@ from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
 from trainer.utils import alpha_prediction_loss
 from trainer.model_checkpoint import MyModelCheckpoint, MyOtherModelCheckpoint
 
+# this line runs validation
+import trainer.validate_config
+
 class Stage:
 
     def __init__(self, pretrained_path):
