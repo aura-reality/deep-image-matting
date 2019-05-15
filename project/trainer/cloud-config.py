@@ -49,5 +49,3 @@ fg_names_path = 'gs://%s/data/fg_names.txt' % bucket
 
 bg_names_path = 'gs://%s/data/bg_names.txt' % bucket 
 
-if (not composite_backgrounds) and (loss_ratio != 1):
-    raise Exception("If composite_backgroundsFalse, w_l should be set to 1 (doesn't make sense to use compositional loss w/o compositing)")
