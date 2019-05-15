@@ -36,11 +36,8 @@ def shuffle_data(num_fgs, num_bgs):
     names = []
     bcount = 0
     for fcount in range(num_fgs):
-        for i in range(num_bgs_per_fg):
-            if reuse_backgrounds:               
-                names.append(str(fcount) + '_' + str(bcount % num_bgs) + '.png')
-            else:
-                names.append(str(fcount) + '_' + str(bcount) + '.png')
+        for i in range(num_bgs_per_fg):            
+            names.append(str(fcount) + '_' + str(bcount % num_bgs) + '.png')
             bcount += 1
 
     from trainer.config import num_valid_samples as config_num_valid_samples
