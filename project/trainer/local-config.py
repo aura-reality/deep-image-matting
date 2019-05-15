@@ -16,6 +16,9 @@ epsilon_sqr = epsilon ** 2
 skip_crop = True
 reuse_backgrounds = True
 w_l = 0.5
+#if composite_backgrounds = False, w_l should be set to 1 (don't use compositional loss w/o compositing)
+composite_backgrounds = True
+
 
 ##############################################################
 # Set your paths here
