@@ -14,7 +14,7 @@ from trainer.config import train_names_path, valid_names_path
 from trainer.config import img_cols, img_rows, channel
 from trainer.config import unknown_code
 from trainer.config import fg_names_path, bg_names_path
-from trainer.config import skip_crop
+from trainer.config import skip_crop, composite_backgrounds
 from trainer.utils import safe_crop, crop, resize
 import trainer.my_io as mio
 
@@ -40,21 +40,25 @@ def get_alpha_test(name):
 
 
 def composite4(fg, bg, a, w, h):
-    fg = np.array(fg, np.float32)
-    bg_h, bg_w = bg.shape[:2]
-    x = 0
-    if bg_w > w:
-        x = np.random.randint(0, bg_w - w)
-    y = 0
-    if bg_h > h:
-        y = np.random.randint(0, bg_h - h)
-    bg = np.array(bg[y:y + h, x:x + w], np.float32)
-    alpha = np.zeros((h, w, 1), np.float32)
-    alpha[:, :, 0] = a / 255.
-    im = alpha * fg + (1 - alpha) * bg
-    im = im.astype(np.uint8)
-    
-    return im, a, fg, bg
+    if composite_backgrounds:
+        fg = np.array(fg, np.float32)
+        bg_h, bg_w = bg.shape[:2]
+        x = 0
+        if bg_w > w:
+            x = np.random.randint(0, bg_w - w)
+        y = 0
+        if bg_h > h:
+            y = np.random.randint(0, bg_h - h)
+        bg = np.array(bg[y:y + h, x:x + w], np.float32)
+        alpha = np.zeros((h, w, 1), np.float32)
+        alpha[:, :, 0] = a / 255.
+        im = alpha * fg + (1 - alpha) * bg
+        im = im.astype(np.uint8)
+        fg = fg.astype(np.uint8)
+        bg = bg.astype(np.uint8)
+        return im, a, fg, bg
+    else: 
+        return fg, a, fg, bg
 
 
 def process(im_name, bg_name):
