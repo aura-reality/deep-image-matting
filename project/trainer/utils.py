@@ -44,7 +44,7 @@ def compositional_loss(y_true, y_pred):
     diff = c_p - c_g
     diff = diff * mask
     num_pixels = K.sum(mask)
-    return K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)
+    return (K.sum(K.sqrt(K.square(diff) + epsilon_sqr)) / (num_pixels + epsilon)) / (3*255)
 
 
 # compute the MSE error given a prediction, a ground truth and a trimap.

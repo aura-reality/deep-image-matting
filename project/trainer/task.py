@@ -13,7 +13,7 @@ from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
 from trainer.utils import overall_loss, get_available_cpus, get_available_gpus
-from trainer.utils import alpha_prediction_loss
+from trainer.utils import alpha_prediction_loss, compositional_loss
 from trainer.model_checkpoint import MyModelCheckpoint, MyOtherModelCheckpoint
 
 # this line runs validation
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     optimizer = stage.get_optimizer()
     loss = stage.get_loss()
     target_tensors = stage.get_target_tensors()
-    model.compile(optimizer=optimizer, loss=loss, target_tensors=target_tensors)
+    model.compile(optimizer=optimizer, loss=loss, target_tensors=target_tensors, metrics = [alpha_prediction_loss, compositional_loss])
 
     print(model.summary())
 
