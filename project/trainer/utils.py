@@ -10,13 +10,13 @@ from trainer.config import epsilon, epsilon_sqr
 from trainer.config import img_cols
 from trainer.config import img_rows
 from trainer.config import unknown_code
-from trainer.config import w_l
+from trainer.config import loss_ratio
 
 
 # overall loss: weighted summation of the two individual losses.
 #
 def overall_loss(y_true, y_pred):
-    return w_l * alpha_prediction_loss(y_true, y_pred) + (1 - w_l) * compositional_loss(y_true, y_pred)
+    return loss_ratio * alpha_prediction_loss(y_true, y_pred) + (1 - loss_ratio) * compositional_loss(y_true, y_pred)
 
 
 # alpha prediction loss: the abosolute difference between the ground truth alpha values and the

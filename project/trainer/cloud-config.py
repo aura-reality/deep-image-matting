@@ -15,8 +15,7 @@ epsilon = 1e-6
 epsilon_sqr = epsilon ** 2
 skip_crop = True
 reuse_backgrounds = True
-w_l = 0.5
-#if composite_backgrounds = False, w_l should be set to 1 (don't use compositional loss w/o compositing)
+loss_ratio = .5 #mix between alpha-loss and compositional-loss
 composite_backgrounds = True
 
 
@@ -48,3 +47,6 @@ vgg16_weights_local_path = './cache/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 fg_names_path = 'gs://%s/data/fg_names.txt' % bucket
 
 bg_names_path = 'gs://%s/data/bg_names.txt' % bucket 
+
+if (not composite_backgrounds) and (loss_ratio != 1):
+    raise Exception("If composite_backgroundsFalse, w_l should be set to 1 (doesn't make sense to use compositional loss w/o compositing)")
