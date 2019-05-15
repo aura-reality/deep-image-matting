@@ -14,6 +14,7 @@ unknown_code = 128
 epsilon = 1e-6
 epsilon_sqr = epsilon ** 2
 skip_crop = True
+w_l = 0.5
 
 ##############################################################
 # Set your paths here
