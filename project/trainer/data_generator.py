@@ -54,6 +54,8 @@ def composite4(fg, bg, a, w, h):
         alpha[:, :, 0] = a / 255.
         im = alpha * fg + (1 - alpha) * bg
         im = im.astype(np.uint8)
+        fg = im.astype(np.uint8)
+        bg = im.astype(np.uint8)
         return im, a, fg, bg
     else: 
         return fg, a, fg, bg
