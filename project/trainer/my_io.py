@@ -17,15 +17,15 @@ def __get_blob(url_str):
     return bucket.get_blob(path)
 
 def __download_as_string(url_str):
-    print("Downloading '%s'..." % url_str)
+    #print("Downloading '%s'..." % url_str)
     ret = __get_blob(url_str).download_as_string()
-    print("Downloaded '%s'" % url_str)
+    #print("Downloaded '%s'" % url_str)
     return ret
 
 def __download_as_file(url_str, dest):
     print("Downloading '%s' to '%s'" % (url_str, dest))
     __get_blob(url_str).download_to_filename(dest)
-    print("Downloaded '%s'" % dest)
+    #print("Downloaded '%s'" % dest)
     return
 
 def imread(url_str, flags=1, cache_dir=None):
@@ -58,9 +58,9 @@ def cache(from_url, cache_to):
 
     os.makedirs(os.path.dirname(cache_to), exist_ok=True)
 
-    print("Downloading: '%s' to '%s'" % (from_url, cache_to))
+    #print("Downloading: '%s' to '%s'" % (from_url, cache_to))
     __file_to_file(from_url, cache_to)
-    print("Downloaded")
+    #print("Downloaded")
 
 def save_to_gcloud(from_path, to_url):
     if not is_gcloud(to_url):
