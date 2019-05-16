@@ -143,7 +143,7 @@ class DataGenSequence(Sequence):
             t0 = time()
             gc.collect()
             t1 = time()
-            print("Garbage collected in %.2fs" % (t1 - t0))
+            print("Garbage collected batch %s in %.2fs" % (idx, t1 - t0))
 
         i = idx * self.batch_size
 
