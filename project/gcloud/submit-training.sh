@@ -1,6 +1,6 @@
 now=$(date +"%Y%m%d_%H%M%S")
 JOB_NAME="deep_image_matting_$now"
-BUCKET="gs://secret-compass-237117-mlengine"
+BUCKET="gs://secret-compass-237117-mlengine-us-west-1"
 
 gcloud ai-platform jobs submit training $JOB_NAME \
 	--staging-bucket $BUCKET \
