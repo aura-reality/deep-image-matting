@@ -21,7 +21,7 @@ loss_ratio = .5 #mix between alpha-loss and compositional-loss
 ##############################################################
 # Set your paths here
 
-bucket = 'secret-compass-237117-mlengine'
+bucket = 'secret-compass-237117-mlengine-us-west-1'
 
 # path to provided foreground images
 fg_path = '../data/fg/'

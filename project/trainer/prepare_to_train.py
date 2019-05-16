@@ -31,7 +31,7 @@ def shuffle_data(num_fgs, num_bgs):
     b = num_train_samples != config_num_train_samples
     c = num_valid_samples != num_valid_samples
     if a or b or c:
-        raise Exception("config.py values are miscalculated: set num_samples={},num_valid_samples={},num_train_samples={}".format(num_samples, num_valid_samples, num_train_samples))
+        raise Exception("config.py values are miscalculated: set num_samples={},num_valid_samples={},num_train_samples={} and run again".format(num_samples, num_valid_samples, num_train_samples))
        
     names = []
     bcount = 0
@@ -59,9 +59,12 @@ def shuffle_data(num_fgs, num_bgs):
 
 if __name__ == '__main__':
 
-    fg_files = os.listdir(fg_path) 
-    bg_files = os.listdir(bg_path) 
-    a_files = os.listdir(a_path)
+    def listdir(path):
+        return [f for f in os.listdir(path) if not f.startswith('.')]
+
+    fg_files = listdir(fg_path)
+    bg_files = listdir(bg_path)
+    a_files = listdir(a_path)
 
     # (0) Validate
     #
@@ -72,8 +75,9 @@ if __name__ == '__main__':
     if len(a_files) != len(fg_files):
         raise Exception("There should be as many masks as foregrounds!")
 
-    if a_files != fg_files:
-        raise Exception("The mask files and foreground files should have the same names!")
+    if set(a_files) != set(fg_files):
+        raise Exception("The mask files and foreground files should have the same names! No mask for '%s'" %
+                        (set(fg_files).difference(a_files)))
 
     # (1) Generate the files with the names of the images
     #

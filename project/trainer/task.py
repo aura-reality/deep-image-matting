@@ -138,7 +138,11 @@ if __name__ == '__main__':
     stage = args["stage"]
 
     # Callbacks
-    tensor_board = keras.callbacks.TensorBoard(log_dir= job_dir + '/logs', histogram_freq=0, write_graph=True, write_images=True)
+    tensor_board = keras.callbacks.TensorBoard(log_dir= job_dir + '/logs',
+                                               histogram_freq=0,
+                                               write_graph=True,
+                                               write_images=True,
+                                               update_freq=100)
     model_names = os.path.join(job_dir + '/checkpoints', '%s.{epoch:02d}-{val_loss:.4f}.hdf5' % stage)
     model_checkpoint = MyModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
@@ -184,7 +188,7 @@ if __name__ == '__main__':
     callbacks = [tensor_board, model_checkpoint, early_stop, reduce_lr]
 
     if batch_size > num_valid_samples: 
-        print("Decreasing batch_size to %s to equal num_valid_samples" % batch_size)
+        print("Decreasing batch_size to %s to equal num_valid_samples" % num_valid_samples)
         batch_size = num_valid_samples
 
     # Start Fine-tuning
