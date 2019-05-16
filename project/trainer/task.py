@@ -181,7 +181,7 @@ if __name__ == '__main__':
 
     print("Running the '%s' stage" % stage)
     num_cpu = get_available_cpus()
-    workers = int(round(num_cpu / 2))
+    workers = 1 # int(round(num_cpu / 2))
     print('skip_crop={}\nnum_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(skip_crop, num_gpu, num_cpu, workers, model_names))
 
     # Final callbacks
@@ -199,6 +199,6 @@ if __name__ == '__main__':
                         epochs=epochs,
                         verbose=1,
                         callbacks=callbacks,
-                        use_multiprocessing=True,
+                        use_multiprocessing=workers > 1,
                         workers=workers
                         )
