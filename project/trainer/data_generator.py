@@ -2,6 +2,8 @@ import math
 import os
 import random
 from random import shuffle
+import gc
+from time import time
 
 import cv2 as cv
 import numpy as np
@@ -135,6 +137,14 @@ class DataGenSequence(Sequence):
         return int(np.ceil(len(self.names) / float(self.batch_size)))
 
     def __getitem__(self, idx):
+
+        # https://github.com/keras-team/keras/issues/3675#issuecomment-347697970
+        if idx % 35 == 0: # approx once per minute during first epoch on standard_p100
+            t0 = time()
+            gc.collect()
+            t1 = time()
+            print("Garbage collected in %.2fs" % (t1 - t0))
+
         i = idx * self.batch_size
 
         length = min(self.batch_size, (len(self.names) - i))
