@@ -79,8 +79,8 @@ def process(im_name, bg_name):
         return None
 
     if add_noise:
-        rand = np.random.randint(-5,5, size=fg.shape)
-        fg = fg + rand
+        rand = np.random.randint(-5,5, size=im.shape)
+        im = im + rand
 
     h, w = im.shape[:2]
     if skip_crop:
