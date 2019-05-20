@@ -16,7 +16,7 @@ from trainer.config import train_names_path, valid_names_path
 from trainer.config import img_cols, img_rows, channel
 from trainer.config import unknown_code
 from trainer.config import fg_names_path, bg_names_path
-from trainer.config import skip_crop, composite_backgrounds
+from trainer.config import skip_crop, composite_backgrounds, add_noise
 from trainer.utils import safe_crop, crop, resize
 import trainer.my_io as mio
 
@@ -77,6 +77,10 @@ def process(im_name, bg_name):
             bad = bg_path + bg_name
         print("Bad image: %s" % bad)
         return None
+
+    if add_noise:
+        rand = np.random.randint(-5,5, size=fg.shape)
+        fg = fg + rand
 
     h, w = im.shape[:2]
     if skip_crop:
