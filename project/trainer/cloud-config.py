@@ -17,6 +17,7 @@ skip_crop = True
 reuse_backgrounds = True
 composite_backgrounds = False
 loss_ratio = .5 #mix between alpha-loss and compositional-loss
+add_noise = True
 
 ##############################################################
 # Set your paths here
