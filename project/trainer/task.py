@@ -9,7 +9,7 @@ import tensorflow as tf
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, skip_crop
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, skip_crop, epochs_per_dataset
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
@@ -184,8 +184,8 @@ if __name__ == '__main__':
 
     print("Running the '%s' stage" % stage)
     num_cpu = get_available_cpus()
-    workers = int(round(num_cpu / 2))
-    print('skip_crop={}\nnum_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(skip_crop, num_gpu, num_cpu, workers, model_names))
+    workers = 1 # int(round(num_cpu / 2))
+    print('epochs_per_dataset={}\nskip_crop={}\nnum_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(epochs_per_dataset,skip_crop, num_gpu, num_cpu, workers, model_names))
 
 
     # Final callbacks
@@ -197,12 +197,14 @@ if __name__ == '__main__':
 
     # Start Fine-tuning
     model.fit_generator(train_gen(),
-                        steps_per_epoch=(num_train_samples // batch_size),
+                        steps_per_epoch=num_train_samples // (batch_size *
+                                                              epochs_per_dataset),
                         validation_data=valid_gen(),
-                        validation_steps=(num_valid_samples // batch_size),
+                        validation_steps=num_valid_samples // (batch_size *
+                                                               epochs_per_dataset),
                         epochs=epochs,
                         verbose=1,
                         callbacks=callbacks,
-                        use_multiprocessing=True,
+                        use_multiprocessing=workers > 1,
                         workers=workers
                         )

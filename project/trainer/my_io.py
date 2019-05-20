@@ -23,7 +23,7 @@ def __download_as_string(url_str):
     return ret
 
 def __download_as_file(url_str, dest):
-    print("Downloading '%s' to '%s'" % (url_str, dest))
+    #print("Downloading '%s' to '%s'" % (url_str, dest))
     __get_blob(url_str).download_to_filename(dest)
     #print("Downloaded '%s'" % dest)
     return
