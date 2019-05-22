@@ -144,8 +144,7 @@ if __name__ == '__main__':
     tensor_board = keras.callbacks.TensorBoard(log_dir= job_dir + '/logs',
                                                histogram_freq=0,
                                                write_graph=True,
-                                               write_images=True,
-                                               update_freq=100)
+                                               write_images=True)
     model_names = os.path.join(job_dir + '/checkpoints', '%s.{epoch:02d}-{val_loss:.4f}.hdf5' % stage)
     model_checkpoint = MyModelCheckpoint(model_names, monitor='val_loss', verbose=1, save_best_only=True)
     early_stop = EarlyStopping('val_loss', patience=patience)
@@ -184,7 +183,7 @@ if __name__ == '__main__':
 
     print("Running the '%s' stage" % stage)
     num_cpu = get_available_cpus()
-    workers = 1 # int(round(num_cpu / 2))
+    workers = int(round(num_cpu / 2))
     print('epochs_per_dataset={}\nskip_crop={}\nnum_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(epochs_per_dataset,skip_crop, num_gpu, num_cpu, workers, model_names))
 
 
