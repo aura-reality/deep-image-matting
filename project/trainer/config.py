@@ -11,16 +11,15 @@ num_samples = 50880
 num_train_samples = 40704
 num_valid_samples = 10176
 
-
 unknown_code = 128
 epsilon = 1e-6
 epsilon_sqr = epsilon ** 2
 skip_crop = False
+add_noise = True
 
 reuse_backgrounds = True
 composite_backgrounds = True
 loss_ratio = .5 #mix between alpha-loss and compositional-loss
-add_noise = False
 
 epochs_per_dataset = 15 # should generally be 1
 
@@ -32,11 +31,11 @@ if env == 'remote':
 
 	bucket = 'secret-compass-237117-mlengine-us-west-1'
 	# path to provided foreground images
-	fg_path = 'gs://%s/all_data/fg/' % bucket 
+	fg_base_path = 'gs://%s/all_data/fg/' % bucket 
 	# path to provided alpha mattes
-	a_path = 'gs://%s/all_data/mask/' % bucket
+	a_base_path = 'gs://%s/all_data/mask/' % bucket
 	# Path to background images (MSCOCO)
-	bg_path = 'gs://%s/all_data/bg/' % bucket
+	bg_base_path = 'gs://%s/all_data/bg/' % bucket
 	# Path to folder where you want the composited images to go
 	out_path = 'data/merged/'
 	train_names_path = 'gs://%s/all_data/ten_bgs/train_names.txt' % bucket
@@ -51,11 +50,11 @@ if env == 'local':
 
 	bucket = 'secret-compass-237117-mlengine-us-west-1'
 	# path to provided foreground images
-	fg_path = '../all_data/fg/'
+	fg_base_path = '../all_data/fg/'
 	# path to provided alpha mattes
-	a_path = '../all_data/mask/'
+	a_base_path = '../all_data/mask/'
 	# Path to background images (MSCOCO)
-	bg_path = '../all_data/bg/'
+	bg_base_path = '../all_data/bg/'
 	# Path to folder where you want the composited images to go
 	out_path = '../all_data/merged/'
 	train_names_path = '../all_data/train_names.txt'

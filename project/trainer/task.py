@@ -9,7 +9,7 @@ import tensorflow as tf
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
-from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, skip_crop, epochs_per_dataset
+from trainer.config import patience, batch_size, epochs, num_train_samples, num_valid_samples, skip_crop, add_noise epochs_per_dataset
 from trainer.data_generator import train_gen, valid_gen
 from trainer.migrate import migrate_model
 from trainer.segnet import build_encoder_decoder, build_refinement
@@ -140,9 +140,6 @@ if __name__ == '__main__':
     job_dir = args["job_dir"]
     stage = args["stage"]
 
-    sys_ret = os.system("gsutil cp -p gs://secret-compass-237117-mlengine/data/bg/100.jpg .")
-    print("sys_ret = %s" % sys_ret)
-
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir= job_dir + '/logs',
                                                histogram_freq=0,
@@ -187,7 +184,7 @@ if __name__ == '__main__':
     print("Running the '%s' stage" % stage)
     num_cpu = get_available_cpus()
     workers = int(round(num_cpu / 2))
-    print('epochs_per_dataset={}\nskip_crop={}\nnum_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(epochs_per_dataset,skip_crop, num_gpu, num_cpu, workers, model_names))
+    print('epochs_per_dataset={}\nadd_noise={}\nskip_crop={}\nnum_gpu={}\nnum_cpu={}\nworkers={}\ntrained_models_path={}.'.format(epochs_per_dataset,add_noise,skip_crop, num_gpu, num_cpu, workers, model_names))
 
 
     # Final callbacks

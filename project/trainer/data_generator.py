@@ -4,6 +4,7 @@ import random
 from random import shuffle
 import gc
 from time import time
+from collections import defaultdict
 
 import cv2 as cv
 import numpy as np
@@ -11,7 +12,7 @@ from keras.utils import Sequence
 import tensorflow as tf
 
 import trainer.config as config
-from trainer.config import fg_path, bg_path, a_path
+from trainer.config import fg_base_path, bg_base_path, a_base_path
 from trainer.config import train_names_path, valid_names_path
 from trainer.config import img_cols, img_rows, channel
 from trainer.config import unknown_code
@@ -63,21 +64,7 @@ def composite4(fg, bg, a, w, h):
         return fg, a, fg, bg
 
 
-def process(im_name, bg_name):
-    im = mio.imread(fg_path + im_name, cache_dir=os.path.join('cache', 'fg'))
-    a = mio.imread(a_path + im_name, 0, cache_dir=os.path.join('cache', 'a'))
-    bg = mio.imread(bg_path + bg_name, cache_dir=os.path.join('cache', 'bg'))
-
-    if im is None or a is None or bg is None:
-        if im is None:
-            bad = fg_path + im_name
-        elif a is None:
-            bad = a_path + im_name
-        else:
-            bad = bg_path + bg_name
-        print("Bad image: %s" % bad)
-        return None
-
+def process(im, a, bg):
     if add_noise:
         rand = np.random.randint(-5,5, size=im.shape)
         im = im + rand
@@ -156,20 +143,62 @@ class DataGenSequence(Sequence):
         batch_y = np.empty((length, img_rows, img_cols, 11), dtype=np.float32)
 
         bad_images = []
+
+        # 1. Maybe pre-fetch the batch
+        #
+
+        # Construct the paths to download
+        paths = []
         for i_batch in range(length):
             name = self.names[i]
             fcount = int(name.split('.')[0].split('_')[0])
             bcount = int(name.split('.')[0].split('_')[1])
             im_name = fg_files[fcount]
             bg_name = bg_files[bcount]
-            processed = process(im_name, bg_name)
-            if processed is None:
+            paths.append((fg_base_path + im_name,
+                          a_base_path + im_name,
+                          bg_base_path + bg_name))
+
+        fg_cache_dir = os.path.join('cache', 'fg')
+        a_cache_dir = os.path.join('cache', 'a')
+        bg_cache_dir = os.path.join('cache', 'bg')
+
+        # Check whether they're cached
+        is_cached = False
+        for fg_path, _, _ in paths:
+            if mio.is_cached(fg_path, fg_cache_dir):
+                is_cached = True
+                break
+
+        if not is_cached:
+            paths_by_dir = defaultdict(list)
+            paths_by_dir[fg_cache_dir].extend([p[0] for p in paths])
+            paths_by_dir[a_cache_dir].extend([p[1] for p in paths])
+            paths_by_dir[bg_cache_dir].extend([p[2] for p in paths])
+
+            # Cache the batch!
+            mio.batch_cache(paths_by_dir)
+
+        # 2. Now process
+        for i_batch in range(length):
+            fg_path, a_path, bg_path = paths[i_batch]
+            fg = mio.imread(fg_path, cache_dir=fg_cache_dir)
+            a = mio.imread(a_path, flags=0, cache_dir=a_cache_dir)
+            bg = mio.imread(bg_path, cache_dir=bg_cache_dir)
+            if fg is None or a is None or bg is None:
+                if fg is None:
+                    bad = fg_path
+                elif a is None:
+                    bad = a_path
+                else:
+                    bad = bg_path
+                print("Bad image: %s" % bad)
                 bad_images.append(i_batch)
                 print("Skipping bad image")
                 i += 1
                 continue
 
-            image, alpha, fg, bg = processed
+            image, alpha, fg, bg = process(fg, a, bg)
 
             trimap = generate_trimap(alpha)
 
