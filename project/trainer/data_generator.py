@@ -13,6 +13,7 @@ import tensorflow as tf
 
 import trainer.config as config
 from trainer.config import fg_base_path, bg_base_path, a_base_path
+from trainer.config import cache_dir
 from trainer.config import train_names_path, valid_names_path
 from trainer.config import img_cols, img_rows, channel
 from trainer.config import unknown_code
@@ -159,9 +160,9 @@ class DataGenSequence(Sequence):
                           a_base_path + im_name,
                           bg_base_path + bg_name))
 
-        fg_cache_dir = os.path.join('cache', 'fg')
-        a_cache_dir = os.path.join('cache', 'a')
-        bg_cache_dir = os.path.join('cache', 'bg')
+        fg_cache_dir = os.path.join(cache_dir, 'fg')
+        a_cache_dir = os.path.join(cache_dir, 'a')
+        bg_cache_dir = os.path.join(cache_dir, 'bg')
 
         # Check whether they're cached
         is_cached = False
