@@ -153,7 +153,7 @@ class DataGenSequence(Sequence):
 
         length = min(self.batch_size, (len(self.names) - i))
         batch_x = np.empty((length, img_rows, img_cols, channel), dtype=np.float32)
-        batch_y = np.empty((length, img_rows, img_cols, 11), dtype=np.float32)
+        batch_y = np.empty((length, img_rows, img_cols, 2), dtype=np.float32)
 
         bad_images = []
         for i_batch in range(length):
@@ -181,8 +181,6 @@ class DataGenSequence(Sequence):
                 x, y = random_choice(trimap, crop_size)
                 image = safe_crop(image, x, y, crop_size)
                 alpha = safe_crop(alpha, x, y, crop_size)
-                fg = safe_crop(fg, x, y, crop_size)
-                bg = safe_crop(bg, x, y, crop_size)
 
             else:
                 h, w = image.shape[:2]
@@ -190,8 +188,6 @@ class DataGenSequence(Sequence):
                 y = 0 if img_rows == h else (h - img_rows) // 2
                 image = crop(image, x, y, (img_rows, img_cols))
                 alpha = crop(alpha , x, y, (img_rows, img_cols))
-                fg = crop(fg, x, y, (img_rows, img_cols))
-                bg = crop(bg, x, y, (img_rows, img_cols))
 
             if channel == 4:
                 trimap = generate_trimap(alpha)
@@ -200,8 +196,6 @@ class DataGenSequence(Sequence):
             if np.random.random_sample() > 0.5:
                 image = np.fliplr(image)
                 alpha = np.fliplr(alpha)
-                fg = np.fliplr(fg)
-                bg = np.fliplr(bg)
 
                 if channel == 4:
                     trimap = np.fliplr(trimap)
@@ -217,10 +211,6 @@ class DataGenSequence(Sequence):
 
             batch_y[i_batch, :, :, 0] = alpha / 255.
             batch_y[i_batch, :, :, 1] = mask
-            batch_y[i_batch, :, :, 2:5] = image
-            batch_y[i_batch, :, :, 5:8] = fg
-            batch_y[i_batch, :, :, 8:11] = bg
-
 
             i += 1
 
