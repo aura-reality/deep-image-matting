@@ -69,7 +69,7 @@ def compute_sad_loss(pred, target, trimap):
     loss = np.sum(error_map * mask)
 
     # the loss is scaled by 1000 due to the large images used in our experiment.
-    loss = loss / 1000
+    #loss = loss / 1000
     # print('sad_loss: ' + str(loss))
     return loss
 
