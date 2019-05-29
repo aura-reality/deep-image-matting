@@ -140,6 +140,9 @@ if __name__ == '__main__':
     job_dir = args["job_dir"]
     stage = args["stage"]
 
+    sys_ret = os.system("gsutil cp -p gs://secret-compass-237117-mlengine/data/bg/100.jpg .")
+    print("sys_ret = %s" % sys_ret)
+
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir= job_dir + '/logs',
                                                histogram_freq=0,

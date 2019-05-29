@@ -19,7 +19,6 @@ BUCKET="gs://secret-compass-237117-mlengine-us-west-1"
 
 echo "Submitting $JOB_NAME"
 
-exit 1
 gcloud ai-platform jobs submit training $JOB_NAME \
 	--staging-bucket $BUCKET \
         --package-path trainer \

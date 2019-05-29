@@ -20,6 +20,7 @@ skip_crop = False
 reuse_backgrounds = True
 composite_backgrounds = True
 loss_ratio = .5 #mix between alpha-loss and compositional-loss
+add_noise = False
 
 epochs_per_dataset = 15 # should generally be 1
 
