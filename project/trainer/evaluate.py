@@ -1,32 +1,28 @@
 import argparse
-
 import cv2 as cv
 import numpy as np
 import glob
 import os
-
-
 from trainer.segnet import build_encoder_decoder, build_refinement
 from trainer.utils import get_final_output
-from trainer.config import channel
-
+from trainer.config import channel, img_rows, img_cols
 from trainer.utils import compute_mse_loss, compute_sad_loss
 
 
-# python test.py -i "images/image.png" -t "images/trimap.png"
+#python trainer/evaluate.py -c 'checkpoint-path' -i 'image-path' -m 'masks-path'
 
 if __name__ == '__main__':
-    img_rows, img_cols = 320, 320
-
 
     ap = argparse.ArgumentParser()
     ap.add_argument("-c", "--checkpoint_path", help="path to the model checkpoint")
     ap.add_argument("-i", "--test_path", help="path to the test images")
     ap.add_argument("-m", "--test_mask_path", help="path to the test masks")
-    ap.add_argument("-s", "--stage", help="stage of model to build, should be the same as the checkpoint")
 
+
+    ap.add_argument("--stage", default="stageless", choices=["encoder_decoder",
+                                                             "refinement"],
+                                                help="the stage of training, should be the same as the checkpoint")
     args = vars(ap.parse_args())
-
     checkpoint_path = args["checkpoint_path"]
     test_path = args["test_path"]
     test_mask_path = args["test_mask_path"]
@@ -35,12 +31,10 @@ if __name__ == '__main__':
     if stage is None:
         stage = 'encoder_decoder'
 
-
     model = build_encoder_decoder()
     if stage == 'refinement':
         model = build_refinement(model)
     model.load_weights(checkpoint_path)
-
 
     files = glob.glob(test_path + "/*.jpg")
     num_images = len(files)
