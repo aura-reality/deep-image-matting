@@ -38,6 +38,8 @@ def is_cached(url_str, cache_dir):
 
 def batch_cache(paths_by_cache_dir):
     for cache_dir, paths in paths_by_cache_dir.items():
+        if not os.path.isdir(cache_dir):
+            os.makedirs(cache_dir, exist_ok=True)
         process = subprocess.Popen(["gsutil", "-m", "cp", "-I", cache_dir],
                                   stdin=subprocess.PIPE,
                                   stdout=subprocess.PIPE,
@@ -45,7 +47,7 @@ def batch_cache(paths_by_cache_dir):
         process.stdin.write("\n".join(paths).encode('utf-8'))
         stdout, stderr = process.communicate()
         if process.returncode != 0:
-            raise Exception("Nonzero return code: %s\n. %s" % (child.returncode,
+            raise Exception("Nonzero return code: %s\n. %s" % (process.returncode,
                                                                stderr))
 
 def imread(url_str, flags=1, cache_dir=None):
