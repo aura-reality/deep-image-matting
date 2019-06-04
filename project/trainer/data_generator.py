@@ -3,7 +3,7 @@ import os
 import random
 from random import shuffle
 import gc
-from time import time
+from time import time, sleep
 from collections import defaultdict
 
 import cv2 as cv
@@ -178,7 +178,16 @@ class DataGenSequence(Sequence):
             paths_by_dir[bg_cache_dir].extend([p[2] for p in paths])
 
             # Cache the batch!
-            mio.batch_cache(paths_by_dir)
+            retry = 0
+            while True:
+                try:
+                    mio.batch_cache(paths_by_dir)
+                    break
+                except Exception as e:
+                    retry = retry + 1
+                    if retry >= 5:
+                        raise e
+                    sleep(1)
 
         # 2. Now process
         for i_batch in range(length):
