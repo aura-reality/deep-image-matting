@@ -27,13 +27,13 @@ epochs_per_dataset = 1
 bucket = 'secret-compass-237117-mlengine-us-west-1'
 
 # path to provided foreground images
-fg_path = 'gs://%s/data/fg/' % bucket
+fg_base_path = 'gs://%s/data/fg/' % bucket
 
 # path to provided alpha mattes
-a_path = 'gs://%s/data/mask/' % bucket
+a_base_path = 'gs://%s/data/mask/' % bucket
 
 # Path to background images (MSCOCO)
-bg_path = 'gs://%s/data/bg/' % bucket
+bg_base_path = 'gs://%s/data/bg/' % bucket
 
 # Path to folder where you want the composited images to go
 out_path = 'data/merged/'

@@ -1,12 +1,12 @@
 # Usage
 #
-# First, set fg/a/bg_path in config.py
+# First, set fg/a/bg_base_path in config.py
 # Then:
 #    python prepare_to_train.py
 
 import os
 import random
-from trainer.config import fg_path, a_path, bg_path
+from trainer.config import fg_base_path, a_base_path, bg_base_path
 from trainer.config import fg_names_path, bg_names_path
 from trainer.config import train_names_path, valid_names_path
 from trainer.config import num_bgs_per_fg, training_fraction
@@ -62,9 +62,9 @@ if __name__ == '__main__':
     def listdir(path):
         return [f for f in os.listdir(path) if not f.startswith('.')]
 
-    fg_files = listdir(fg_path)
-    bg_files = listdir(bg_path)
-    a_files = listdir(a_path)
+    fg_files = listdir(fg_base_path)
+    bg_files = listdir(bg_base_path)
+    a_files = listdir(a_base_path)
 
     # (0) Validate
     #

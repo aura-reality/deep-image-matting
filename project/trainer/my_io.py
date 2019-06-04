@@ -1,9 +1,11 @@
 from urllib.parse import urlparse
+import os
+import subprocess
+
 from google.cloud import storage
 import cv2 as cv
 import numpy as np
 from tensorflow.python.lib.io import file_io
-import os
 
 def is_gcloud(url_str):
     return urlparse(url_str).scheme == 'gs'
@@ -28,10 +30,30 @@ def __download_as_file(url_str, dest):
     #print("Downloaded '%s'" % dest)
     return
 
+def __cache_file_name(url_str, cache_dir):
+    return os.path.join(cache_dir, url_str.split('/')[-1])
+
+def is_cached(url_str, cache_dir):
+    return os.path.isfile(__cache_file_name(url_str, cache_dir))
+
+def batch_cache(paths_by_cache_dir):
+    for cache_dir, paths in paths_by_cache_dir.items():
+        if not os.path.isdir(cache_dir):
+            os.makedirs(cache_dir, exist_ok=True)
+        process = subprocess.Popen(["gsutil", "-m", "cp", "-I", cache_dir],
+                                  stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
+        process.stdin.write("\n".join(paths).encode('utf-8'))
+        stdout, stderr = process.communicate()
+        if process.returncode != 0:
+            raise Exception("Nonzero return code: %s\n. %s" % (process.returncode,
+                                                               stderr))
+
 def imread(url_str, flags=1, cache_dir=None):
     if is_gcloud(url_str):
         if cache_dir:
-            filename = os.path.join(cache_dir, url_str.split('/')[-1])
+            filename = __cache_file_name(url_str, cache_dir)
             if not os.path.isfile(filename):
                 os.makedirs(cache_dir, exist_ok=True)
                 __download_as_file(url_str, filename)
